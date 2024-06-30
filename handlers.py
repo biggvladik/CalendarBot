@@ -1,23 +1,14 @@
 from aiogram import types, F, Router
-from aiogram.types import Message
-
 from aiogram.filters import Command
-
-import config
-from factory import get_event_by_name,make_str,get_month
+from factory import get_event_by_name, make_str
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from db import data
+from kb import get_keyboard_fab,MonthCallbackFactory
 router = Router()
-
-
-
-
 
 
 @router.message(Command("start"))
 async def start_handler(message: types.Message):
-
-
     # Проверка авторизованности
     flag = data.select_player_name(str(message.from_user.id))
     if not flag:
@@ -41,42 +32,24 @@ async def start_handler(message: types.Message):
         "Нажмите на кнопку, чтобы бот отправил вам расписание",
         reply_markup=builder.as_markup()
     )
-# @router.callback_query(F.data == "Расписание")
-# async def send_random_value(callback: types.CallbackQuery):
-#     await callback.message.answer(make_str(get_event_by_name('Фирсов')))
-
 
 
 @router.callback_query(F.data == "Расписание")
 async def send_calendar_requests(callback: types.CallbackQuery):
-    builder = InlineKeyboardBuilder()
-    buttons = get_month(config.directory_id)
-    builder.add(types.InlineKeyboardButton(
-        text=buttons[0],
-        callback_data=buttons[0])
-    )
-
-    builder.add(types.InlineKeyboardButton(
-        text=buttons[1],
-        callback_data=buttons[1])
-    )
     await callback.message.answer(
         "Выберите месяц",
-        reply_markup=builder.as_markup()
+        reply_markup=get_keyboard_fab()
     )
-
-@router.callback_query(F.data == "06. Июнь  2024")
-async def send_admin_requests(callback: types.CallbackQuery):
-    print(data.select_player_name(callback.from_user.id))
-    await callback.message.answer(make_str(get_event_by_name(data.select_player_name(callback.from_user.id),"06. Июнь  2024")))
-
-@router.callback_query(F.data == "07. Июль  2024")
-async def send_admin_requests(callback: types.CallbackQuery):
-    print(data.select_player_name(callback.from_user.id))
-    await callback.message.answer(make_str(get_event_by_name(data.select_player_name(callback.from_user.id),"07. Июль  2024")))
+    await callback.answer()
 
 
-
+@router.callback_query(MonthCallbackFactory.filter())
+async def callbacks_num_change_fab(
+        callback: types.CallbackQuery,
+        callback_data: MonthCallbackFactory):
+    await callback.message.answer(
+             make_str(get_event_by_name(data.select_player_name(callback.from_user.id), callback_data.value)))
+    await callback.answer()
 
 @router.callback_query(F.data == "Админ-панель")
 async def send_admin_requests(callback: types.CallbackQuery):
@@ -99,3 +72,5 @@ async def send_admin_requests(callback: types.CallbackQuery):
         "Выберите действие",
         reply_markup=builder.as_markup()
     )
+    await callback.answer()
+
