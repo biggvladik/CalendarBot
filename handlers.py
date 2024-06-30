@@ -30,6 +30,10 @@ async def start_handler(message: types.Message):
         text="Админ-панель",
         callback_data="Админ-панель")
     )
+    builder.add(types.InlineKeyboardButton(
+        text="Настройки",
+        callback_data="Настройки")
+    )
     await message.answer(
         "Нажмите на кнопку, чтобы бот отправил вам расписание",
         reply_markup=builder.as_markup()
@@ -37,3 +41,30 @@ async def start_handler(message: types.Message):
 @router.callback_query(F.data == "Расписание")
 async def send_random_value(callback: types.CallbackQuery):
     await callback.message.answer(make_str(get_event_by_name('Фирсов')))
+
+
+
+
+
+
+@router.callback_query(F.data == "Админ-панель")
+async def send_admin_requests(callback: types.CallbackQuery):
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="Добавить работника",
+        callback_data="Добавить работника")
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text="Удалить работника",
+        callback_data="Удалить работника")
+    )
+    builder.add(types.InlineKeyboardButton(
+        text="Показать всех работников",
+        callback_data="Показать всех работников")
+    )
+
+    await callback.message.answer(
+        "Выберите действие",
+        reply_markup=builder.as_markup()
+    )

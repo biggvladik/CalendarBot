@@ -33,7 +33,7 @@ def make_str(data:list):
     for s in data:
         workers = ', '.join(s[2])
         name_s = s[0] + ' ' + s[1] + ' ' + workers + ' ' + s[3] + ' ' + s[4]
-        res_s = res_s + name_s + '\n' + '--------------------------------------------------------------' + '\n'
+        res_s = res_s + name_s + '\n' + '-----------------------------------------' + '\n'
     return res_s
 
 #q = make_str(get_event_by_name('Хавкин'))
