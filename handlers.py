@@ -2,7 +2,9 @@ from aiogram import types, F, Router
 from aiogram.types import Message
 
 from aiogram.filters import Command
-from factory import get_event_by_name,make_str
+
+import config
+from factory import get_event_by_name,make_str,get_month
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from db import data
 router = Router()
@@ -48,17 +50,18 @@ async def start_handler(message: types.Message):
 @router.callback_query(F.data == "Расписание")
 async def send_calendar_requests(callback: types.CallbackQuery):
     builder = InlineKeyboardBuilder()
+    buttons = get_month(config.directory_id)
     builder.add(types.InlineKeyboardButton(
-        text="06. Июнь  2024",
-        callback_data="06. Июнь  2024")
+        text=buttons[0],
+        callback_data=buttons[0])
     )
 
     builder.add(types.InlineKeyboardButton(
-        text="07. Июль  2024",
-        callback_data="07. Июль  2024")
+        text=buttons[1],
+        callback_data=buttons[1])
     )
     await callback.message.answer(
-        "Выберите действие",
+        "Выберите месяц",
         reply_markup=builder.as_markup()
     )
 

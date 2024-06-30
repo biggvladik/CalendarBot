@@ -1,6 +1,12 @@
 import gspread
 from datetime import datetime
+from google.oauth2 import service_account
+from googleapiclient.http import MediaIoBaseDownload,MediaFileUpload
+from googleapiclient.discovery import build
+import pprint
+import io
 
+import config
 
 
 def check_name(name:str,workers:list):
@@ -35,8 +41,26 @@ def make_str(data:list):
         workers = ', '.join(s[2])
         name_s = str(number) +'.' + ' | ' + s[0] + ' | ' + s[1] + ' | ' + workers + ' | ' + s[3] + ' | ' + s[4] + ' | '
         res_s = res_s + name_s + '\n' + '-----------------------------------------' +  '\n'
+
+    if res_s =='':
+        res_s = 'Расписание не найдено!'
     return res_s
 
 
 
 
+def get_month(directory_id:str ):
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    SERVICE_ACCOUNT_FILE = 'credits.json'
+    credentials = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    service = build('drive', 'v3', credentials=credentials)
+
+
+    results = service.files().list(pageSize=10,
+                                   fields="nextPageToken, files(id, name, createdTime)",q=f"'{directory_id}' in parents").execute()
+    results['files'] = sorted(results['files'], key=lambda x: x['createdTime'])
+    return [i['name'] for i in results['files'][-2:]]
+
+
+print(get_month(config.directory_id))
