@@ -1,5 +1,6 @@
 from aiogram import types, F, Router
 from aiogram.types import Message
+
 from aiogram.filters import Command
 from factory import get_event_by_name,make_str
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -8,7 +9,15 @@ router = Router()
 
 
 
-
+@router.message(Command("test"))
+async def start_handler(message: types.Message):
+    table =  '''
+    <b>Заголовок1</b> | <b>Заголовок2</b>
+    -----------------|-----------------
+    Строка 1 значение1 | Строка 1 значение2
+    Строка 2 значение1 | Строка 2 значение2
+    '''
+    await message.answer(table, parse_mode='html')
 
 
 @router.message(Command("start"))
@@ -38,11 +47,36 @@ async def start_handler(message: types.Message):
         "Нажмите на кнопку, чтобы бот отправил вам расписание",
         reply_markup=builder.as_markup()
     )
+# @router.callback_query(F.data == "Расписание")
+# async def send_random_value(callback: types.CallbackQuery):
+#     await callback.message.answer(make_str(get_event_by_name('Фирсов')))
+
+
+
 @router.callback_query(F.data == "Расписание")
-async def send_random_value(callback: types.CallbackQuery):
-    await callback.message.answer(make_str(get_event_by_name('Фирсов')))
+async def send_calendar_requests(callback: types.CallbackQuery):
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="06. Июнь  2024",
+        callback_data="06. Июнь  2024")
+    )
 
+    builder.add(types.InlineKeyboardButton(
+        text="07. Июль  2024",
+        callback_data="07. Июль  2024")
+    )
+    await callback.message.answer(
+        "Выберите действие",
+        reply_markup=builder.as_markup()
+    )
 
+@router.callback_query(F.data == "06. Июнь  2024")
+async def send_admin_requests(callback: types.CallbackQuery):
+    await callback.message.answer(make_str(get_event_by_name('Фирсов',"06. Июнь  2024")))
+
+@router.callback_query(F.data == "07. Июль  2024")
+async def send_admin_requests(callback: types.CallbackQuery):
+    await callback.message.answer(make_str(get_event_by_name('Фирсов',"07. Июль  2024")))
 
 
 
