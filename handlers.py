@@ -9,15 +9,7 @@ router = Router()
 
 
 
-@router.message(Command("test"))
-async def start_handler(message: types.Message):
-    table =  '''
-    <b>Заголовок1</b> | <b>Заголовок2</b>
-    -----------------|-----------------
-    Строка 1 значение1 | Строка 1 значение2
-    Строка 2 значение1 | Строка 2 значение2
-    '''
-    await message.answer(table, parse_mode='html')
+
 
 
 @router.message(Command("start"))
@@ -32,7 +24,7 @@ async def start_handler(message: types.Message):
         return
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
-        text="Расписание",
+        text=f"Расписание",
         callback_data="Расписание")
     )
     builder.add(types.InlineKeyboardButton(
@@ -72,11 +64,13 @@ async def send_calendar_requests(callback: types.CallbackQuery):
 
 @router.callback_query(F.data == "06. Июнь  2024")
 async def send_admin_requests(callback: types.CallbackQuery):
-    await callback.message.answer(make_str(get_event_by_name('Фирсов',"06. Июнь  2024")))
+    print(data.select_player_name(callback.from_user.id))
+    await callback.message.answer(make_str(get_event_by_name(data.select_player_name(callback.from_user.id),"06. Июнь  2024")))
 
 @router.callback_query(F.data == "07. Июль  2024")
 async def send_admin_requests(callback: types.CallbackQuery):
-    await callback.message.answer(make_str(get_event_by_name('Фирсов',"07. Июль  2024")))
+    print(data.select_player_name(callback.from_user.id))
+    await callback.message.answer(make_str(get_event_by_name(data.select_player_name(callback.from_user.id),"07. Июль  2024")))
 
 
 
