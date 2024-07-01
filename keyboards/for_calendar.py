@@ -18,6 +18,10 @@ def get_keyboard_fab():
     builder.button(
         text=button_text[1], callback_data=MonthCallbackFactory(action="pick_month", value=button_text[1])
     )
+    builder.button(
+        text="Назад",
+        callback_data="Назад"
+    )
     builder.adjust(2)
     return builder.as_markup()
 

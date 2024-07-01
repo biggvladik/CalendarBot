@@ -17,5 +17,10 @@ def get_admin_kb():
         text="Показать всех работников",
         callback_data="Показать всех работников")
     )
+    builder.button(
+        text="Назад",
+        callback_data="Назад"
+    )
+    builder.adjust(3)
 
     return builder.as_markup()

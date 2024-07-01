@@ -12,8 +12,4 @@ def get_start_kb():
         text="Админ-панель",
         callback_data="Админ-панель")
     )
-    builder.add(types.InlineKeyboardButton(
-        text="Настройки",
-        callback_data="Настройки")
-    )
     return builder.as_markup()
