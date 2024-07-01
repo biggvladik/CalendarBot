@@ -42,10 +42,12 @@ def make_str(data: list):
     res_s = ''
     for number, s in enumerate(data):
         workers = ', '.join(s[2])
-
-        name_s = str(number) + '.' + ' | ' + s[0] + ' | ' + s[1] + ' | ' + workers + ' | ' + s[3] + ' | ' + s[4] + ' | '
-        res_s = res_s + name_s + '\n' + '-----------------------------------------' + '\n'
-
+        date = s[0] + ' | ' + s[1] + ' | ' + s[4] + ' | '
+        name_event = s[3]
+        res = (f' <b>Дата </b>: {date}\n'
+               f' <b>Событие </b>: {name_event}\n'
+               f' <b>Работники </b>: {workers}\n')
+        res_s = res_s +res + '-----------------------------------------' + '\n'
     if res_s == '':
         res_s = 'Расписание не найдено!'
     return res_s
