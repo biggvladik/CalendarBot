@@ -21,7 +21,10 @@ async def callbacks_num_change_fab(
         callback: types.CallbackQuery,
         callback_data: MonthCallbackFactory):
     await callback.message.answer(
-             make_str(get_event_by_name(data.select_player_name(callback.from_user.id), callback_data.value)),parse_mode='HTML')
+             make_str(get_event_by_name(data.select_player_name(callback.from_user.id), callback_data.value)),parse_mode='HTML',
+             reply_markup=get_keyboard_fab()
+    )
+
     await callback.answer()
 
 @router.callback_query(F.data == "Назад")
