@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.fsm.state import StatesGroup, State
 
 
 def get_admin_kb():
@@ -24,3 +25,10 @@ def get_admin_kb():
     builder.adjust(3)
 
     return builder.as_markup()
+
+
+
+
+class ChooseUser(StatesGroup):
+    choosing_id_ext = State()
+    choosing_name = State()
