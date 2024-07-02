@@ -12,7 +12,7 @@ def check_name(name: str, workers: list):
 
 
 def get_event_by_name(name: str, month_name: str):
-    now = datetime.now()
+    now = datetime(datetime.now().year,datetime.now().month,datetime.now().day)
     gc = gspread.service_account(filename='credits.json')
     worksheet = gc.open(month_name)
     worksheet_list = worksheet.worksheets()
