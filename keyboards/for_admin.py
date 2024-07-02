@@ -2,7 +2,6 @@ from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import StatesGroup, State
 
-
 def get_admin_kb():
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
@@ -27,8 +26,31 @@ def get_admin_kb():
     return builder.as_markup()
 
 
+def get_admin_insert_kb():
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="Подтвердить",
+        callback_data="Подтвердить")
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text="Заполнить заново",
+        callback_data="Заполнить заново")
+    )
+    builder.adjust(2)
+    return builder.as_markup()
+
+
+
+
+
+
+
+
 
 
 class ChooseUser(StatesGroup):
     choosing_id_ext = State()
     choosing_name = State()
+
+
