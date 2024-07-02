@@ -27,7 +27,7 @@ def get_event_by_name(name: str, month_name: str):
             workers = item[7].split('\n')
             event_name = item[2].replace('\n', '')
             time = item[5]
-            if check_name(name, workers) and datetime.strptime(date_number, '%d.%m.%Y') > now:
+            if check_name(name, workers) and datetime.strptime(date_number, '%d.%m.%Y') >= now:
                 current_res.append((date_number, day_name, workers, event_name, time))
     return current_res
 
