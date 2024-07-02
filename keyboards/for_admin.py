@@ -54,3 +54,5 @@ class ChooseUser(StatesGroup):
     choosing_name = State()
 
 
+class DeleteUser(StatesGroup):
+    choosing_id_ext = State()

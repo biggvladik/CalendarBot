@@ -47,17 +47,16 @@ class Data:
         return True
 
 
-    def delete_player(self,id_ext,name:str):
+    def delete_player(self,id_ext):
         cursor = self.conn.cursor()
 
         sql = """
                 DELETE FROM Users Where ID_EXT = ?
               """
 
-        cursor.execute(sql,(id_ext,name))
+        cursor.execute(sql,id_ext)
         cursor.commit()
         cursor.close()
-        return True
 
 
 

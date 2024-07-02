@@ -1,7 +1,7 @@
 from aiogram import types, F, Router
 from  keyboards.for_admin import get_admin_kb,get_admin_insert_kb
 from db import data
-from keyboards.for_admin import  ChooseUser
+from keyboards.for_admin import  ChooseUser,DeleteUser
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
@@ -62,12 +62,18 @@ async def food_id_ext(message: Message, state: FSMContext):
 @router.callback_query(F.data == "Подтвердить")
 async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
-
-    data.insert_player(user_data['choosing_id_ext'],user_data['choosing_name'])
-    await state.clear()
-    await callback.message.answer(
-        text="Вставка произошла успешно",
-    )
+    try:
+        data.insert_player(user_data['choosing_id_ext'],user_data['choosing_name'])
+        await state.clear()
+        await callback.message.answer(
+            text="Вставка произошла успешно",
+        )
+    except:
+        data.delete_player(user_data['choosing_id_ext'])
+        await state.clear()
+        await callback.message.answer(
+            text="Удаление произошло успешно",
+        )
 
 
 
@@ -80,3 +86,23 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
         reply_markup=get_admin_kb()
     )
     await callback.answer()
+
+@router.callback_query(F.data == "Удалить работника")
+async def choose_id_ext(callback: types.CallbackQuery,state: FSMContext):
+    await callback.message.answer(
+        text="Введите TelegramID пользователя: ",
+    )
+    await state.set_state(DeleteUser.choosing_id_ext)
+
+
+@router.message(DeleteUser.choosing_id_ext)
+async def food_id_ext(message: Message, state: FSMContext):
+    await state.update_data(choosing_id_ext=message.text.lower())
+
+    user_data = await state.get_data()
+
+    await state.update_data(choosing_id_ext=message.text.lower())
+    await message.answer(
+        text=f"Подтвердите выбранную информацию  ID: {user_data['choosing_id_ext']}",
+        reply_markup=get_admin_insert_kb()
+    )
