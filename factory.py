@@ -22,13 +22,15 @@ def get_event_by_name(name: str, month_name: str):
         for item in worksheets[1::]:
             if item[0] is None or item[0] == '':
                 continue
+            print(item)
+            sport_name = item[1]
             date_number = item[0].split('\n')[0]
             day_name = item[0].split('\n')[1]
             workers = item[7].split('\n')
             event_name = item[2].replace('\n', '')
             time = item[5]
             if check_name(name, workers) and datetime.strptime(date_number, '%d.%m.%Y') >= now:
-                current_res.append((date_number, day_name, workers, event_name, time))
+                current_res.append((date_number, day_name, workers, event_name, time,sport_name))
     return current_res
 
 
@@ -44,6 +46,7 @@ def make_str(data: list):
         date = s[0] + ' | ' + s[1] + ' | ' + s[4] + ' | '
         name_event = s[3]
         res = (f' <b>Дата </b>: {date}\n'
+               f' <b>Вид спорта  </b>: {s[-1]}\n'
                f' <b>Событие </b>: {name_event}\n'
                f' <b>Работники </b>: {workers}\n')
         res_s = res_s +res + '-----------------------------------------' + '\n'
