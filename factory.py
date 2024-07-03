@@ -49,7 +49,9 @@ def make_str(data: list):
                f' <b>Вид спорта  </b>: {s[-1]}\n'
                f' <b>Событие </b>: {name_event}\n'
                f' <b>Работники </b>: {workers}\n')
-        res_s = res_s +res + '-----------------------------------------' + '\n'
+        res_s = res_s +res
+        if number!= len(data)-1:
+            res_s = res_s + '-----------------------------------------' + '\n'
     if res_s == '':
         res_s = 'Расписание не найдено!'
     return res_s
