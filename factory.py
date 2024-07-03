@@ -43,7 +43,7 @@ def make_str(data: list):
     res_s = ''
     for number, s in enumerate(data):
         workers = ', '.join(s[2])
-        date = s[0] + ' | ' + s[1] + ' | ' + s[4] + ' | '
+        date = s[0] + ' | ' + s[1] + ' | ' + s[4]
         name_event = s[3]
         res = (f' <b>Дата </b>: {date}\n'
                f' <b>Вид спорта  </b>: {s[-1]}\n'

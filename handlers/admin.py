@@ -42,7 +42,7 @@ async def choose_id_ext(callback: types.CallbackQuery,state: FSMContext):
 
 @router.message(ChooseUser.choosing_id_ext)
 async def food_id_ext(message: Message, state: FSMContext):
-    await state.update_data(choosing_id_ext=message.text.lower())
+    await state.update_data(choosing_id_ext=message.text)
     await message.answer(
         text="Спасибо. Теперь, пожалуйста, выберите имя пользователя: ",
     )
@@ -50,7 +50,7 @@ async def food_id_ext(message: Message, state: FSMContext):
 
 @router.message(ChooseUser.choosing_name)
 async def food_id_ext(message: Message, state: FSMContext):
-    await state.update_data(choosing_name=message.text.lower())
+    await state.update_data(choosing_name=message.text)
 
     user_data = await state.get_data()
     print(user_data)
@@ -97,11 +97,11 @@ async def choose_id_ext(callback: types.CallbackQuery,state: FSMContext):
 
 @router.message(DeleteUser.choosing_id_ext)
 async def food_id_ext(message: Message, state: FSMContext):
-    await state.update_data(choosing_id_ext=message.text.lower())
+    await state.update_data(choosing_id_ext=message.text)
 
     user_data = await state.get_data()
 
-    await state.update_data(choosing_id_ext=message.text.lower())
+    await state.update_data(choosing_id_ext=message.text)
     await message.answer(
         text=f"Подтвердите выбранную информацию  ID: {user_data['choosing_id_ext']}",
         reply_markup=get_admin_insert_kb()
