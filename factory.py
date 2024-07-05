@@ -3,6 +3,8 @@ from datetime import datetime
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
+import config
+
 
 def check_name(name: str, workers: list):
     for worker in workers:
@@ -11,10 +13,11 @@ def check_name(name: str, workers: list):
     return False
 
 
-def get_event_by_name(name: str, month_name: str):
-    now = datetime(datetime.now().year,datetime.now().month,datetime.now().day)
+def get_event_by_name(date: str):
+    month_number = date.split('.')[1]
+
     gc = gspread.service_account(filename='credits.json')
-    worksheet = gc.open(month_name)
+    worksheet = gc.open(get_month(config.directory_id,month_number))
     worksheet_list = worksheet.worksheets()
     current_res = []
     for sheet in worksheet_list:
@@ -22,14 +25,14 @@ def get_event_by_name(name: str, month_name: str):
         for item in worksheets[1::]:
             if item[0] is None or item[0] == '':
                 continue
-            print(item)
+          #  print(item)
             sport_name = item[1]
             date_number = item[0].split('\n')[0]
             day_name = item[0].split('\n')[1]
             workers = item[7].split('\n')
             event_name = item[2].replace('\n', '')
             time = item[5]
-            if check_name(name, workers) and datetime.strptime(date_number, '%d.%m.%Y') >= now:
+            if date ==  date_number:
                 current_res.append((date_number, day_name, workers, event_name, time,sport_name))
     return current_res
 
@@ -57,7 +60,7 @@ def make_str(data: list):
     return res_s
 
 
-def get_month(directory_id: str):
+def get_month(directory_id: str,month_number:str):
     SCOPES = ['https://www.googleapis.com/auth/drive']
     SERVICE_ACCOUNT_FILE = 'credits.json'
     credentials = service_account.Credentials.from_service_account_file(
@@ -68,8 +71,13 @@ def get_month(directory_id: str):
                                    fields="nextPageToken, files(id, name, createdTime)",
                                    q=f"'{directory_id}' in parents").execute()
     results['files'] = sorted(results['files'], key=lambda x: x['createdTime'])
-    return [i['name'] for i in results['files'][-2:]]
+    return [i['name'] for i in results['files'][-2:] if month_number in i['name']][0]
 
-# q = get_event_by_name('Поляков','07. Июль  2024')
-#
-# print(make_str(q))
+
+
+# q = (get_month('16TWMsKHeviDKZ_SqfGq1L4nI74STGzE2','07'))
+# print(q)
+q = get_event_by_name('06.07.2024')
+
+
+#print(make_str(q))
