@@ -58,8 +58,17 @@ class Data:
         cursor.commit()
         cursor.close()
 
+    def select_all_players_new(self):
+        cursor = self.conn.cursor()
 
+        sql = """
+                      SELECT ID_EXT,name FROM Users 
+                     """
 
+        temp_res = cursor.execute(sql)
+        res = temp_res.fetchall()
+        cursor.close()
+        return [{'id':i[0],'name':i[1],'event':[]} for i in res]
 
 
 

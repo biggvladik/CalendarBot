@@ -22,6 +22,7 @@ async def start_handler(message: types.Message):
 
 @router.message(Command("test"))
 async def start_handler(message: types.Message):
+    print(f'Ваш ID: {message.from_user.id}')
     await message.answer(f'Ваш ID: {message.from_user.id}')
 
 

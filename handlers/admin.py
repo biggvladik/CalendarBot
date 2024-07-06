@@ -1,11 +1,14 @@
+import traceback
+
 from aiogram import types, F, Router
-from  keyboards.for_admin import get_admin_kb,get_admin_insert_kb,get_admin_distrb
+from  keyboards.for_admin import get_admin_kb,get_admin_insert_kb,get_admin_distrb,get_admin_reply
 from db import data
 from keyboards.for_admin import  ChooseUser,DeleteUser,ChooseData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 import datetime
-from factory import get_event_by_name
+from factory import get_event_by_name,make_str,make_distrib
+from config import bot
 router = Router()
 
 
@@ -55,8 +58,15 @@ async def choose_id_ext(callback: types.CallbackQuery):
 @router.callback_query(F.data == "Сегодня")
 async def choose_id_ext(callback: types.CallbackQuery):
     today = datetime.datetime.now().strftime('%d.%m.%Y')
-    print(today)
-    print(get_event_by_name(today))
+    all_players = data.select_all_players_new()
+    events = get_event_by_name(today)
+    res = make_distrib(all_players,events)
+    for event in res:
+        try:
+            await bot.send_message(int(event['id']), make_str(event['event']),parse_mode='HTML',
+                                   reply_markup=get_admin_reply())
+        except:
+            print(traceback.format_exc())
     await callback.answer()
 
 

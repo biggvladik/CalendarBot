@@ -69,7 +69,13 @@ def get_admin_distrb():
     return builder.as_markup()
 
 
-
+def get_admin_reply():
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="Подтвердить",
+        callback_data="reply_user")
+    )
+    return builder.as_markup()
 
 
 

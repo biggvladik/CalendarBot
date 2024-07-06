@@ -47,10 +47,10 @@ def make_str(data: list):
         workers = ', '.join(s[2])
         date = s[0] + ' | ' + s[1] + ' | ' + s[4]
         name_event = s[3]
-        res = (f' <b>Дата </b>: {date}\n'
-               f' <b>Вид спорта  </b>: {s[-1]}\n'
-               f' <b>Событие </b>: {name_event}\n'
-               f' <b>Работники </b>: {workers}\n')
+        res = (f'<b>Дата </b>: {date}\n'
+               f'<b>Вид спорта  </b>: {s[-1]}\n'
+               f'<b>Событие </b>: {name_event}\n'
+               f'<b>Работники </b>: {workers}\n')
         res_s = res_s +res
         if number!= len(data)-1:
             res_s = res_s + '-----------------------------------------' + '\n'
@@ -73,10 +73,15 @@ def get_month(directory_id: str,month_number:str):
     return [i['name'] for i in results['files'][-2:] if month_number in i['name']][0]
 
 
+def make_distrib(players:list,events:list):
+    for event in events:
+        for player in players:
+            if player['name'] in event[2]:
+                player['event'].append(event)
 
-# q = (get_month('16TWMsKHeviDKZ_SqfGq1L4nI74STGzE2','07'))
-# print(q)
-#q = get_event_by_name('06.07.2024')
+    return players
 
 
-#print(make_str(q))
+
+
+
