@@ -1,5 +1,5 @@
 import pyodbc
-
+from factory import make_str
 
 class Data:
     def __init__(self, road):
@@ -71,7 +71,18 @@ class Data:
         return [{'id':i[0],'name':i[1],'event':[]} for i in res]
 
 
+    def insert_message_logs(self,date_str:str,message:dict):
 
+        cursor = self.conn.cursor()
+
+        sql = """
+                      Insert into message_logs (date_str,id_ext,message_str,approve)
+                               VALUES (?,?,?,?)
+                      """
+
+        cursor.execute(sql, (date_str, message['id'],make_str(message['event']),0))
+        cursor.commit()
+        cursor.close()
 
 
 data = Data('./Calendar.mdb')

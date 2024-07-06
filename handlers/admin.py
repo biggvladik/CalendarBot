@@ -65,8 +65,10 @@ async def choose_id_ext(callback: types.CallbackQuery):
         try:
             await bot.send_message(int(event['id']), make_str(event['event']),parse_mode='HTML',
                                    reply_markup=get_admin_reply())
+            data.insert_message_logs(today, event)
+
         except:
-            print(traceback.format_exc())
+            pass
     await callback.answer()
 
 
@@ -74,8 +76,17 @@ async def choose_id_ext(callback: types.CallbackQuery):
 async def choose_id_ext(callback: types.CallbackQuery):
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
-    print(today)
-    print(get_event_by_name(today))
+    all_players = data.select_all_players_new()
+    events = get_event_by_name(today)
+    res = make_distrib(all_players, events)
+    for event in res:
+        try:
+            await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
+                                   reply_markup=get_admin_reply())
+            data.insert_message_logs(today, event)
+
+        except:
+            pass
     await callback.answer()
 
 @router.callback_query(F.data == "Выбрать дату")
@@ -92,7 +103,19 @@ async def food_id_ext(message: Message, state: FSMContext):
     await state.update_data(date=message.text)
     date = await state.get_data()
 
-    print(get_event_by_name(date['date']))
+    all_players = data.select_all_players_new()
+    events = get_event_by_name(date['date'])
+    res = make_distrib(all_players, events)
+    for event in res:
+        try:
+            await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
+                                   reply_markup=get_admin_reply())
+            data.insert_message_logs(date['date'], event)
+        except:
+            pass
+
+
+
 
 
 
