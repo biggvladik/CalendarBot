@@ -95,10 +95,19 @@ class Data:
         cursor.commit()
         cursor.close()
 
-
+    def select_events_by_date(self,date_str:str):
+        cursor = self.conn.cursor()
+        sql_select = """
+            SELECT message_logs.date_str, message_logs.id_ext, message_logs.approve, Users.name
+            FROM message_logs
+            INNER JOIN Users ON message_logs.id_ext = Users.ID_EXT WHERE message_logs.date_str = ?
+        """
+        res = cursor.execute(sql_select, date_str).fetchall()
+        cursor.close()
+        return res
 
 
 
 data = Data('./Calendar.mdb')
 
-
+#print(data.select_events_by_date('06.07.2024'))

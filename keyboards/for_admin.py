@@ -62,10 +62,14 @@ def get_admin_distrb():
     )
 
     builder.add(types.InlineKeyboardButton(
+        text="Результаты рассылки",
+        callback_data="result distrib")
+    )
+    builder.add(types.InlineKeyboardButton(
         text="Назад",
         callback_data="Назад")
     )
-    builder.adjust(2)
+    builder.adjust(3)
     return builder.as_markup()
 
 
@@ -80,6 +84,30 @@ def get_admin_reply():
 
 
 
+def get_admin_distrb_result():
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="Сегодня",
+        callback_data="today_result")
+    )
+    builder.add(types.InlineKeyboardButton(
+        text="Завтра",
+        callback_data="tommorow_result")
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text="Выбрать дату",
+        callback_data="choose_date_result")
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text="Назад",
+        callback_data="cancel_result")
+    )
+    builder.adjust(3)
+    return builder.as_markup()
+
+
 class ChooseUser(StatesGroup):
     choosing_id_ext = State()
     choosing_name = State()
@@ -90,4 +118,8 @@ class DeleteUser(StatesGroup):
 
 
 class ChooseData(StatesGroup):
+    date = State()
+
+
+class ChooseDataResult(StatesGroup):
     date = State()

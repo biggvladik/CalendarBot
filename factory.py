@@ -83,5 +83,14 @@ def make_distrib(players:list,events:list):
 
 
 
-
+def make_result_distrib(events:list):
+    s=''
+    for number, event in enumerate(events):
+        status = (lambda x: '+' if x else '-')(event[2])
+        s = s + (f'<b>ДАТА</b>: {event[0]}\n'
+                 f'<b>РАБОТНИК</b>: {event[3]}\n'
+                 f'<b>СТАТУС</b>: {status}\n')
+        if number != len(events) - 1:
+            s = s + '----------------\n'
+    return s
 
