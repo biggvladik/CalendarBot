@@ -85,5 +85,20 @@ class Data:
         cursor.close()
 
 
+    def change_status_message(self,date_str:str,id_ext:str):
+        cursor = self.conn.cursor()
+
+        sql_update = """
+                              Update message_logs SET approve = ? WHERE date_str = ? AND id_ext = ?
+                           """
+        cursor.execute(sql_update, (1,date_str, id_ext))
+        cursor.commit()
+        cursor.close()
+
+
+
+
+
 data = Data('./Calendar.mdb')
+
 

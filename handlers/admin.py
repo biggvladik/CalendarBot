@@ -117,6 +117,12 @@ async def food_id_ext(message: Message, state: FSMContext):
 
 
 
+@router.callback_query(F.data == "reply_user")
+async def choose_id_ext(callback: types.CallbackQuery):
+    date = callback.message.text.split('|')[0][6::].strip()
+    print(date,callback.from_user.id)
+    data.change_status_message(date,callback.from_user.id)
+    await bot.send_message(callback.from_user.id, 'Подтверждение произошло успешно!')
 
 
 @router.message(DeleteUser.choosing_id_ext)
