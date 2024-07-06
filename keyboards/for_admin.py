@@ -17,6 +17,10 @@ def get_admin_kb():
         text="Показать всех работников",
         callback_data="Показать всех работников")
     )
+    builder.add(types.InlineKeyboardButton(
+        text="Рассылка",
+        callback_data="Рассылка")
+    )
     builder.button(
         text="Назад",
         callback_data="Назад"
@@ -41,7 +45,28 @@ def get_admin_insert_kb():
     return builder.as_markup()
 
 
+def get_admin_distrb():
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="Сегодня",
+        callback_data="Сегодня")
+    )
+    builder.add(types.InlineKeyboardButton(
+        text="Завтра",
+        callback_data="Завтра")
+    )
 
+    builder.add(types.InlineKeyboardButton(
+        text="Выбрать дату",
+        callback_data="Выбрать дату")
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text="Назад",
+        callback_data="Назад")
+    )
+    builder.adjust(2)
+    return builder.as_markup()
 
 
 
@@ -56,3 +81,7 @@ class ChooseUser(StatesGroup):
 
 class DeleteUser(StatesGroup):
     choosing_id_ext = State()
+
+
+class ChooseData(StatesGroup):
+    date = State()

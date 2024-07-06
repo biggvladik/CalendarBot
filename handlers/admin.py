@@ -1,10 +1,11 @@
 from aiogram import types, F, Router
-from  keyboards.for_admin import get_admin_kb,get_admin_insert_kb
+from  keyboards.for_admin import get_admin_kb,get_admin_insert_kb,get_admin_distrb
 from db import data
-from keyboards.for_admin import  ChooseUser,DeleteUser
+from keyboards.for_admin import  ChooseUser,DeleteUser,ChooseData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-
+import datetime
+from factory import get_event_by_name
 router = Router()
 
 
@@ -38,6 +39,77 @@ async def choose_id_ext(callback: types.CallbackQuery,state: FSMContext):
         text="Введите TelegramID пользователя: ",
     )
     await state.set_state(ChooseUser.choosing_id_ext)
+
+
+
+
+@router.callback_query(F.data == "Рассылка")
+async def choose_id_ext(callback: types.CallbackQuery):
+    await callback.message.answer(
+        "Выберите дату рассылки",
+        reply_markup=get_admin_distrb()
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "Сегодня")
+async def choose_id_ext(callback: types.CallbackQuery):
+    today = datetime.datetime.now().strftime('%d.%m.%Y')
+    print(today)
+    print(get_event_by_name(today))
+    await callback.answer()
+
+
+@router.callback_query(F.data == "Завтра")
+async def choose_id_ext(callback: types.CallbackQuery):
+    today = datetime.datetime.now() + datetime.timedelta(days=1)
+    today = today.strftime('%d.%m.%Y')
+    print(today)
+    print(get_event_by_name(today))
+    await callback.answer()
+
+@router.callback_query(F.data == "Выбрать дату")
+async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.answer(
+        "Введите дату в формате: День.Месяц.Год",
+    )
+    await state.set_state(ChooseData.date)
+
+
+
+@router.message(ChooseData.date)
+async def food_id_ext(message: Message, state: FSMContext):
+    await state.update_data(date=message.text)
+    date = await state.get_data()
+
+    print(get_event_by_name(date['date']))
+
+
+
+@router.message(DeleteUser.choosing_id_ext)
+async def food_id_ext(message: Message, state: FSMContext):
+    await state.update_data(choosing_id_ext=message.text)
+
+    user_data = await state.get_data()
+
+    await state.update_data(choosing_id_ext=message.text)
+    await message.answer(
+        text=f"Подтвердите выбранную информацию  ID: {user_data['choosing_id_ext']}",
+        reply_markup=get_admin_insert_kb()
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @router.message(ChooseUser.choosing_id_ext)

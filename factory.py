@@ -25,7 +25,6 @@ def get_event_by_name(date: str):
         for item in worksheets[1::]:
             if item[0] is None or item[0] == '':
                 continue
-          #  print(item)
             sport_name = item[1]
             date_number = item[0].split('\n')[0]
             day_name = item[0].split('\n')[1]
@@ -77,7 +76,7 @@ def get_month(directory_id: str,month_number:str):
 
 # q = (get_month('16TWMsKHeviDKZ_SqfGq1L4nI74STGzE2','07'))
 # print(q)
-q = get_event_by_name('06.07.2024')
+#q = get_event_by_name('06.07.2024')
 
 
 #print(make_str(q))
