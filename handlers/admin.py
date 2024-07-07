@@ -306,10 +306,13 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
         if not flag:
             await callback.message.answer(
                 text="Вставка произошла успешно",
+                reply_markup=get_admin_kb()
+
             )
         else:
             await callback.message.answer(
                 text=flag,
+                reply_markup=get_admin_kb()
             )
 
     except:
@@ -317,6 +320,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
         await state.clear()
         await callback.message.answer(
             text="Удаление произошло успешно",
+            reply_markup=get_admin_kb()
         )
 
 
