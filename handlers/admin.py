@@ -1,3 +1,5 @@
+import traceback
+
 from aiogram import types, F, Router
 from  keyboards.for_admin import get_admin_kb,get_admin_insert_kb,get_admin_distrb,get_admin_reply,get_admin_distrb_result
 from db import data
@@ -81,18 +83,26 @@ async def choose_id_ext(callback: types.CallbackQuery):
     res_s = ''
     for event in res:
         try:
-
+            if not event['event']:
+                continue
             await bot.send_message(int(event['id']), make_str(event['event']),parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
             res_s+=make_str(event['event'])
 
         except:
-            pass
-    await callback.message.answer(
-        res_s,
-        parse_mode='HTML'
-    )
+            print(traceback.format_exc(),event)
+    if res_s:
+        await callback.message.answer(
+            res_s,
+            parse_mode='HTML'
+        )
+    else:
+        await callback.message.answer(
+            'Ничего отправлено не было!',
+            parse_mode='HTML'
+        )
+
     await callback.answer()
 
 
@@ -105,17 +115,27 @@ async def choose_id_ext(callback: types.CallbackQuery):
     res = make_distrib(all_players, events)
     res_s = ''
     for event in res:
+        if not event['event']:
+            continue
         try:
+            if make_str(event['event']) == 'Расписание не найдено!':
+                continue
             await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
             res_s += make_str(event['event'])
         except:
             pass
-    await callback.message.answer(
-        res_s,
-        parse_mode='HTML'
-    )
+    if res_s:
+        await callback.message.answer(
+            res_s,
+            parse_mode='HTML'
+        )
+    else:
+        await callback.message.answer(
+            'Ничего отправлено не было!',
+            parse_mode='HTML'
+        )
     await callback.answer()
 
 @router.callback_query(F.data == "Выбрать дату")
@@ -138,7 +158,11 @@ async def food_id_ext(message: Message, state: FSMContext):
     res_s = ''
 
     for event in res:
+        if not event['event']:
+            continue
         try:
+            if make_str(event['event']) == 'Расписание не найдено!':
+                continue
             await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(date['date'], event)
@@ -146,10 +170,16 @@ async def food_id_ext(message: Message, state: FSMContext):
 
         except:
             pass
-    await message.answer(
-        res_s,
-        parse_mode='HTML'
-    )
+    if res_s:
+        await message.answer(
+            res_s,
+            parse_mode='HTML'
+        )
+    else:
+        await message.answer(
+            'Ничего отправлено не было!',
+            parse_mode='HTML'
+        )
 
 
 

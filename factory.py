@@ -28,7 +28,7 @@ def get_event_by_name(date: str):
             sport_name = item[1]
             date_number = item[0].split('\n')[0]
             day_name = item[0].split('\n')[1]
-            workers = item[7].split('\n')
+            workers = [i.strip() for i in item[7].split('\n')]
             event_name = item[2].replace('\n', '')
             time = item[5]
             if date ==  date_number:
@@ -37,9 +37,7 @@ def get_event_by_name(date: str):
 
 
 def make_str(data: list):
-    from prettytable import PrettyTable
-    table = PrettyTable()
-    table.add_rows(data)
+
 
 
     res_s = ''
@@ -76,7 +74,7 @@ def get_month(directory_id: str,month_number:str):
 def make_distrib(players:list,events:list):
     for event in events:
         for player in players:
-            if player['name'] in event[2]:
+            if player['name'].lower().strip() in [i.strip().lower() for i in event[2]]:
                 player['event'].append(event)
 
     return players
@@ -93,4 +91,6 @@ def make_result_distrib(events:list):
         if number != len(events) - 1:
             s = s + '----------------\n'
     return s
+
+
 

@@ -79,9 +79,13 @@ class Data:
                       Insert into message_logs (date_str,id_ext,message_str,approve)
                                VALUES (?,?,?,?)
                       """
-
-        cursor.execute(sql, (date_str, message['id'],make_str(message['event']),0))
-        cursor.commit()
+        sql_check = """
+                        SELECT id FROM message_logs WHERE  date_str = ? and id_ext = ?
+                    """
+        flag = cursor.execute(sql_check,(date_str, message['id'])).fetchone()
+        if not flag:
+            cursor.execute(sql, (date_str, message['id'],make_str(message['event']),0))
+            cursor.commit()
         cursor.close()
 
 
@@ -124,4 +128,4 @@ class Data:
 
 data = Data('./Calendar.mdb')
 
-#print(data.select_events_by_date('06.07.2024'))
+
