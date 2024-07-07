@@ -253,7 +253,6 @@ async def food_id_ext(message: Message, state: FSMContext):
         parse_mode='HTML',
         reply_markup=get_admin_distrb_result()
     )
-    await message.answer()
 
 @router.message(DeleteUser.choosing_id_ext)
 async def food_id_ext(message: Message, state: FSMContext):
