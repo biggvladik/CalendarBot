@@ -29,7 +29,7 @@ def get_event_by_name(date: str):
             date_number = item[0].split('\n')[0]
             day_name = item[0].split('\n')[1]
             workers = [i.strip() for i in item[7].split('\n')]
-            event_name = item[2].replace('\n', '')
+            event_name = item[2].replace('\n', ' ')
             time = item[5]
             if date ==  date_number:
                 current_res.append((date_number, day_name, workers, event_name, time,sport_name))
@@ -44,11 +44,12 @@ def make_str(data: list):
     for number, s in enumerate(data):
         workers = ', '.join(s[2])
         date = s[0] + ' | ' + s[1] + ' | ' + s[4]
+        date = date.replace('\n',' ')
         name_event = s[3]
-        res = (f'<b>Дата </b>: {date}\n'
-               f'<b>Вид спорта  </b>: {s[-1]}\n'
-               f'<b>Событие </b>: {name_event}\n'
-               f'<b>Работники </b>: {workers}\n')
+        res = (f'<b>Дата</b>: {date}\n'
+               f'<b>Вид спорта</b>: {s[-1]}\n'
+               f'<b>Событие</b>: {name_event}\n'
+               f'<b>Работники</b>: {workers}\n')
         res_s = res_s +res
         if number!= len(data)-1:
             res_s = res_s + '-----------------------------------------' + '\n'
@@ -91,6 +92,5 @@ def make_result_distrib(events:list):
         if number != len(events) - 1:
             s = s + '----------------\n'
     return s
-
 
 
