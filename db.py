@@ -40,11 +40,25 @@ class Data:
               Insert into Users (ID_EXT,name)
                        VALUES (?,?)  
               """
+        sql_check_id = """
+                        SELECT id  FROM Users WHERE ID_EXT = ?
+                    """
+        sql_check_name = """
+                                SELECT id  FROM Users WHERE name = ?
+                            """
+
+        # Проверка наличия игрока
+
+        flag1 = cursor.execute(sql_check_id,id_ext).fetchone()
+        flag2 = cursor.execute(sql_check_name,name).fetchone()
+
+        if flag1 or flag2:
+            return 'Имя/ID уже присутствует в БД!'
 
         cursor.execute(sql,(id_ext,name))
         cursor.commit()
         cursor.close()
-        return True
+        return False
 
 
     def delete_player(self,id_ext):

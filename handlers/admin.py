@@ -301,11 +301,17 @@ async def food_id_ext(message: Message, state: FSMContext):
 async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     try:
-        data.insert_player(user_data['choosing_id_ext'],user_data['choosing_name'])
+        flag = data.insert_player(user_data['choosing_id_ext'],user_data['choosing_name'])
         await state.clear()
-        await callback.message.answer(
-            text="Вставка произошла успешно",
-        )
+        if not flag:
+            await callback.message.answer(
+                text="Вставка произошла успешно",
+            )
+        else:
+            await callback.message.answer(
+                text=flag,
+            )
+
     except:
         data.delete_player(user_data['choosing_id_ext'])
         await state.clear()
