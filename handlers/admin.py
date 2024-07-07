@@ -210,7 +210,8 @@ async def get_result_distrib(callback: types.CallbackQuery):
 
     await callback.message.answer(
         s,
-        parse_mode='HTML'
+        parse_mode='HTML',
+        reply_markup = get_admin_distrb_result()
     )
     await callback.answer()
 
@@ -225,7 +226,8 @@ async def get_result_distrib(callback: types.CallbackQuery):
         s = 'События не найдены!'
     await callback.message.answer(
         s,
-        parse_mode='HTML'
+        parse_mode='HTML',
+        reply_markup=get_admin_distrb_result()
     )
     await callback.answer()
 
@@ -248,7 +250,8 @@ async def food_id_ext(message: Message, state: FSMContext):
         s = 'События не найдены!'
     await message.answer(
         s,
-        parse_mode='HTML'
+        parse_mode='HTML',
+        reply_markup=get_admin_distrb_result()
     )
     await message.answer()
 
