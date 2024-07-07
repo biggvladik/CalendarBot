@@ -13,10 +13,17 @@ router = Router()
 
 @router.callback_query(F.data == "Админ-панель")
 async def send_admin_requests(callback: types.CallbackQuery):
-    await callback.message.answer(
-        "Выберите действие",
-        reply_markup=get_admin_kb()
-    )
+    # Авторизация
+    flag = data.check_admin_user(callback.from_user.id)
+    if not flag:
+        await callback.message.answer(
+            "У вас нет админ прав | Вы не авторизованы",
+        )
+    else:
+        await callback.message.answer(
+            "Выберите действие",
+            reply_markup=get_admin_kb()
+        )
     await callback.answer()
 
 

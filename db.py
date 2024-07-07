@@ -106,6 +106,20 @@ class Data:
         cursor.close()
         return res
 
+    def check_admin_user(self,id_ext:int):
+        cursor = self.conn.cursor()
+
+        sql = """
+                              SELECT is_admin FROM Users  WHERE ID_EXT = ?
+                             """
+
+        temp_res = cursor.execute(sql,id_ext)
+        res = temp_res.fetchone()
+        if res:
+            return res[0]
+        else:
+            return False
+
 
 
 data = Data('./Calendar.mdb')
