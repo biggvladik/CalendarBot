@@ -27,6 +27,18 @@ async def send_admin_requests(callback: types.CallbackQuery):
     await callback.answer()
 
 
+@router.callback_query(F.data == "cancel_distrib")
+async def send_admin_requests(callback: types.CallbackQuery):
+
+    await callback.message.answer(
+        text= 'Выберите действие',
+        reply_markup=get_admin_kb()
+    )
+    await callback.answer()
+
+
+
+
 
 
 @router.callback_query(F.data == "Показать всех работников")
@@ -66,14 +78,21 @@ async def choose_id_ext(callback: types.CallbackQuery):
     all_players = data.select_all_players_new()
     events = get_event_by_name(today)
     res = make_distrib(all_players,events)
+    res_s = ''
     for event in res:
         try:
+
             await bot.send_message(int(event['id']), make_str(event['event']),parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
+            res_s+=make_str(event['event'])
 
         except:
             pass
+    await callback.message.answer(
+        res_s,
+        parse_mode='HTML'
+    )
     await callback.answer()
 
 
@@ -84,14 +103,19 @@ async def choose_id_ext(callback: types.CallbackQuery):
     all_players = data.select_all_players_new()
     events = get_event_by_name(today)
     res = make_distrib(all_players, events)
+    res_s = ''
     for event in res:
         try:
             await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
-
+            res_s += make_str(event['event'])
         except:
             pass
+    await callback.message.answer(
+        res_s,
+        parse_mode='HTML'
+    )
     await callback.answer()
 
 @router.callback_query(F.data == "Выбрать дату")
@@ -111,13 +135,21 @@ async def food_id_ext(message: Message, state: FSMContext):
     all_players = data.select_all_players_new()
     events = get_event_by_name(date['date'])
     res = make_distrib(all_players, events)
+    res_s = ''
+
     for event in res:
         try:
             await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(date['date'], event)
+            res_s += make_str(event['event'])
+
         except:
             pass
+    await message.answer(
+        res_s,
+        parse_mode='HTML'
+    )
 
 
 

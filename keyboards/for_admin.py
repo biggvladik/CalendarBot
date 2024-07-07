@@ -21,10 +21,6 @@ def get_admin_kb():
         text="Рассылка",
         callback_data="Рассылка")
     )
-    builder.button(
-        text="Назад",
-        callback_data="Назад"
-    )
     builder.adjust(3)
 
     return builder.as_markup()
@@ -67,7 +63,7 @@ def get_admin_distrb():
     )
     builder.add(types.InlineKeyboardButton(
         text="Назад",
-        callback_data="Назад")
+        callback_data="cancel_distrib")
     )
     builder.adjust(3)
     return builder.as_markup()
