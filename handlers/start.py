@@ -20,7 +20,7 @@ async def start_handler(message: types.Message):
         reply_markup=get_start_kb()
     )
 
-@router.message(Command("test"))
+@router.message(Command("show_id"))
 async def start_handler(message: types.Message):
     print(f'Ваш ID: {message.from_user.id}')
     await message.answer(f'Ваш ID: {message.from_user.id}')
