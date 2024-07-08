@@ -1,10 +1,10 @@
 from aiogram import types, Router
 from aiogram.filters import Command
 from keyboards.for_start import get_start_kb
-from keyboards.for_admin import  get_admin_reply
+from keyboards.for_admin import  get_admin_reply,get_admin_distrb_result
 from db import data
 import datetime
-from factory import get_event_by_name, make_str, make_distrib
+from factory import get_event_by_name, make_str, make_distrib,make_result_distrib
 from config import bot
 
 
@@ -71,3 +71,24 @@ async def send_push(message: types.Message):
             'Ничего отправлено не было!',
             parse_mode='HTML'
         )
+
+@router.message(Command("show_result"))
+async def start_handler(message: types.Message):
+    flag = data.check_admin_user(message.from_user.id)
+    if not (flag):
+        await message.answer(
+            'У вас нет админ прав!',
+            parse_mode='HTML'
+        )
+        return
+
+    today = datetime.datetime.now() + datetime.timedelta(days=1)
+    today = today.strftime('%d.%m.%Y')
+    events = data.select_events_by_date(today)
+    s = make_result_distrib(events)
+
+    await message.answer(
+        s,
+        parse_mode='HTML',
+        reply_markup=get_admin_distrb_result()
+    )
