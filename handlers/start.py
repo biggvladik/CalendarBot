@@ -40,6 +40,14 @@ async def send_push(message: types.Message):
     all_players = data.select_all_players_new()
     events = get_event_by_name(today)
     res = make_distrib(all_players, events)
+    flag = data.check_admin_user(message.from_user.id)
+    if not(flag):
+        await message.answer(
+            'У вас нет админ прав!',
+            parse_mode='HTML'
+        )
+        return
+
     res_s = ''
     for event in res:
         if not event['event']:
