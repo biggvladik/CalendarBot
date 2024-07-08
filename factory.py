@@ -91,6 +91,8 @@ def make_result_distrib(events:list):
                  f'<b>СТАТУС</b>: {status}\n')
         if number != len(events) - 1:
             s = s + '----------------\n'
+    if s =='':
+        return 'Все работники подтвердили события!'
     return s
 
 
