@@ -8,7 +8,7 @@ from keyboards.for_admin import ChooseUser, DeleteUser, ChooseData, ChooseDataRe
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 import datetime
-from factory import get_event_by_name, make_str, make_distrib, make_result_distrib
+from factory import get_event_by_name, make_str, make_distrib, make_result_distrib,make_full_str
 from config import bot
 
 router = Router()
@@ -92,7 +92,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
             print(traceback.format_exc(), event)
     if res_s:
         await callback.message.answer(
-            res_s,
+            make_full_str(res_s),
             parse_mode='HTML'
         )
     else:
@@ -126,7 +126,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
             pass
     if res_s:
         await callback.message.answer(
-            res_s,
+            make_full_str(res_s),
             parse_mode='HTML'
         )
     else:
@@ -170,7 +170,7 @@ async def food_id_ext(message: Message, state: FSMContext):
             pass
     if res_s:
         await message.answer(
-            res_s,
+            make_full_str(res_s),
             parse_mode='HTML'
         )
     else:
@@ -216,6 +216,7 @@ async def get_result_distrib(callback: types.CallbackQuery):
     today = today.strftime('%d.%m.%Y')
     events = data.select_events_by_date(today)
     s = make_result_distrib(events)
+
     if s.strip() == '':
         s = 'События не найдены!'
     await callback.message.answer(

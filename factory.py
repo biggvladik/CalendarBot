@@ -38,8 +38,6 @@ def get_event_by_name(date: str):
 
 def make_str(data: list):
 
-
-
     res_s = ''
     for number, s in enumerate(data):
         workers = ', '.join(s[2])
@@ -51,8 +49,8 @@ def make_str(data: list):
                f'<b>Событие</b>: {name_event}\n'
                f'<b>Работники</b>: {workers}\n')
         res_s = res_s +res
-        if number!= len(data)-1:
-            res_s = res_s + '-----------------------------------------' + '\n'
+       # if number!= len(data)-1:
+        res_s = res_s + '-----------------------------------------' + '\n'
     if res_s == '':
         res_s = 'Расписание не найдено!'
     return res_s
@@ -96,3 +94,14 @@ def make_result_distrib(events:list):
     return s
 
 
+def make_full_str(string:str):
+    substring = "-----------------------------------------"
+
+    # Находим индекс последнего вхождения подстроки в строку
+    index = string.rfind(substring)
+
+    # Если подстрока найдена, удаляем ее
+    if index != -1:
+        new_string = string[:index] + string[index + len(substring):]
+        return  new_string
+    return string
