@@ -69,12 +69,28 @@ def get_month(directory_id: str,month_number:str):
     results['files'] = sorted(results['files'], key=lambda x: x['createdTime'])
     return [i['name'] for i in results['files'][-2:] if month_number in i['name']][0]
 
+def get_month_full(directory_id: str):
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    SERVICE_ACCOUNT_FILE = 'credits.json'
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    service = build('drive', 'v3', credentials=credentials)
+
+    results = service.files().list(pageSize=10,
+                                   fields="nextPageToken, files(id, name, createdTime)",
+                                   q=f"'{directory_id}' in parents").execute()
+
+    results['files'] = sorted(results['files'], key=lambda x: x['createdTime'])
+    return results
+
+
 
 def make_distrib(players:list,events:list):
     for event in events:
         for player in players:
-            if player['name'].lower().strip() in [i.strip().lower() for i in event[2]]:
-                player['event'].append(event)
+            for player_name in [i.strip().lower() for i in event[2]]:
+                if player['name'].lower().strip() in player_name:
+                    player['event'].append(event)
 
     return players
 
@@ -90,7 +106,7 @@ def make_result_distrib(events:list):
         if number != len(events) - 1:
             s = s + '----------------\n'
     if s =='':
-        return 'Все работники подтвердили события!'
+        return 'Событий в этот день не найдено!'
     return s
 
 
@@ -105,3 +121,6 @@ def make_full_str(string:str):
         new_string = string[:index] + string[index + len(substring):]
         return  new_string
     return string
+
+
+print(get_month_full('16TWMsKHeviDKZ_SqfGq1L4nI74STGzE2'))

@@ -1,11 +1,14 @@
 from aiogram import types, Router
 from aiogram.filters import Command
+
+import config
 from keyboards.for_start import get_start_kb
 from keyboards.for_admin import  get_admin_reply,get_admin_distrb_result
 from db import data
 import datetime
-from factory import get_event_by_name, make_str, make_distrib,make_result_distrib,make_full_str
+from factory import get_event_by_name, make_str, make_distrib,make_result_distrib,make_full_str,get_month_full
 from config import bot
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 
@@ -91,4 +94,23 @@ async def start_handler(message: types.Message):
         s,
         parse_mode='HTML',
         reply_markup=get_admin_distrb_result()
+    )
+
+@router.message(Command("send_link"))
+async def start_handler(message: types.Message):
+    months = get_month_full(config.directory_id)
+    month_number_really = datetime.datetime.now().strftime('%m')
+
+    builder = InlineKeyboardBuilder()
+
+    for month in months['files']:
+        month_number = int(month['name'].split('.')[0])
+        if int(month_number_really) > month_number:
+            continue
+        builder.row(types.InlineKeyboardButton(
+            text=month['name'], url="https://docs.google.com/spreadsheets/d/" + month['id'])
+        )
+    await message.answer(
+        'Выберите месяц',
+        reply_markup=builder.as_markup(),
     )

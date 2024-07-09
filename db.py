@@ -118,7 +118,7 @@ class Data:
         sql_select = """
             SELECT message_logs.date_str, message_logs.id_ext, message_logs.approve, Users.name
             FROM message_logs
-            INNER JOIN Users ON message_logs.id_ext = Users.ID_EXT WHERE message_logs.date_str = ? AND message_logs.approve = 0
+            INNER JOIN Users ON message_logs.id_ext = Users.ID_EXT WHERE message_logs.date_str = ?
         """
         res = cursor.execute(sql_select, date_str).fetchall()
         cursor.close()
