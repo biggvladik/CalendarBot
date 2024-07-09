@@ -98,9 +98,9 @@ async def start_handler(message: types.Message):
 
 @router.message(Command("send_link"))
 async def start_handler(message: types.Message):
+
     months = get_month_full(config.directory_id)
     month_number_really = datetime.datetime.now().strftime('%m')
-
     builder = InlineKeyboardBuilder()
 
     for month in months['files']:
