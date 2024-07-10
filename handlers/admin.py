@@ -8,7 +8,7 @@ from keyboards.for_admin import ChooseUser, DeleteUser, ChooseData, ChooseDataRe
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 import datetime
-from factory import get_event_by_name, make_str, make_distrib, make_result_distrib,make_full_str
+from factory import get_event_by_name, make_str, make_distrib, make_result_distrib, make_full_str
 from config import bot
 
 router = Router()
@@ -38,6 +38,7 @@ async def send_cancel_admin_distrib(callback: types.CallbackQuery):
     )
     await callback.answer()
 
+
 @router.callback_query(F.data == "cancel_distrib")
 async def send_cancel_admin_distrib(callback: types.CallbackQuery):
     await callback.message.answer(
@@ -45,6 +46,7 @@ async def send_cancel_admin_distrib(callback: types.CallbackQuery):
         reply_markup=get_admin_kb()
     )
     await callback.answer()
+
 
 @router.callback_query(F.data == "Показать всех работников")
 async def send_admin_requests(callback: types.CallbackQuery):
@@ -88,7 +90,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
             data.insert_message_logs(today, event)
             res_s += make_str(event['event'])
 
-        except:
+        except Exception:
             print(traceback.format_exc(), event)
     if res_s:
         await callback.message.answer(
@@ -122,7 +124,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
             res_s += make_str(event['event'])
-        except:
+        except Exception:
             pass
     if res_s:
         await callback.message.answer(
@@ -166,7 +168,7 @@ async def food_id_ext(message: Message, state: FSMContext):
             data.insert_message_logs(date['date'], event)
             res_s += make_str(event['event'])
 
-        except:
+        except Exception:
             pass
     if res_s:
         await message.answer(
@@ -303,7 +305,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
                 reply_markup=get_admin_kb()
             )
 
-    except:
+    except Exception:
         data.delete_player(user_data['choosing_id_ext'])
         await state.clear()
         await callback.message.answer(
