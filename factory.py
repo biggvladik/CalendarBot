@@ -28,6 +28,7 @@ def get_event_by_name(date: str):
             sport_name = item[1]
             date_number = item[0].split('\n')[0]
             day_name = item[0].split('\n')[1]
+            print(item)
             workers = [i.strip() for i in item[7].split('\n')]
             event_name = item[2].replace('\n', ' ')
             time = item[5]
@@ -123,4 +124,4 @@ def make_full_str(string:str):
     return string
 
 
-print(get_month_full('16TWMsKHeviDKZ_SqfGq1L4nI74STGzE2'))
+#get_event_by_name('12.07.2024')
