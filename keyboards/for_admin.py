@@ -2,6 +2,7 @@ from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import StatesGroup, State
 
+
 def get_admin_kb():
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
@@ -76,8 +77,6 @@ def get_admin_reply():
         callback_data="reply_user")
     )
     return builder.as_markup()
-
-
 
 
 def get_admin_distrb_result():

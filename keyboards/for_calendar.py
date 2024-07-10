@@ -3,6 +3,8 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from factory import get_month
 import config
+
+
 class MonthCallbackFactory(CallbackData, prefix="fabnum"):
     action: str
     value: Optional[str] = None
@@ -24,4 +26,3 @@ def get_keyboard_fab():
     )
     builder.adjust(2)
     return builder.as_markup()
-
