@@ -58,7 +58,7 @@ async def send_admin_requests(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Добавить работника")
-async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
+async def add_worker(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(
         text="Введите TelegramID пользователя: ",
     )
@@ -66,7 +66,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == "Рассылка")
-async def choose_id_ext(callback: types.CallbackQuery):
+async def pick_distrib(callback: types.CallbackQuery):
     await callback.message.answer(
         "Выберите дату рассылки",
         reply_markup=get_admin_distrb()
@@ -75,7 +75,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Сегодня")
-async def choose_id_ext(callback: types.CallbackQuery):
+async def pick_distrib_today(callback: types.CallbackQuery):
     today = datetime.datetime.now().strftime('%d.%m.%Y')
     all_players = data.select_all_players_new()
     events = get_event_by_name(today)
@@ -85,7 +85,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
         try:
             if not event['event']:
                 continue
-            await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
+            await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
             res_s += make_str(event['event'])
@@ -107,7 +107,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Завтра")
-async def choose_id_ext(callback: types.CallbackQuery):
+async def pick_distrib_tommorow(callback: types.CallbackQuery):
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
     all_players = data.select_all_players_new()
@@ -120,7 +120,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
         try:
             if make_str(event['event']) == 'Расписание не найдено!':
                 continue
-            await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
+            await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
             res_s += make_str(event['event'])
@@ -140,7 +140,7 @@ async def choose_id_ext(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Выбрать дату")
-async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
+async def pick_distrib_date(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(
         "Введите дату в формате: День.Месяц.Год",
     )
@@ -148,7 +148,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.message(ChooseData.date)
-async def food_id_ext(message: Message, state: FSMContext):
+async def pick_distrib_date_requests(message: Message, state: FSMContext):
     await state.update_data(date=message.text)
     date = await state.get_data()
 
@@ -163,7 +163,7 @@ async def food_id_ext(message: Message, state: FSMContext):
         try:
             if make_str(event['event']) == 'Расписание не найдено!':
                 continue
-            await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
+            await bot.send_message(int(event['id']),  make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(date['date'], event)
             res_s += make_str(event['event'])
@@ -183,7 +183,7 @@ async def food_id_ext(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == "reply_user")
-async def choose_id_ext(callback: types.CallbackQuery):
+async def reply_user_request(callback: types.CallbackQuery):
     date = callback.message.text.split('|')[0][6::].strip()
     data.change_status_message(date, callback.from_user.id)
     await bot.send_message(callback.from_user.id, 'Подтверждение произошло успешно!')
@@ -199,7 +199,7 @@ async def get_result_distrib(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "today_result")
-async def get_result_distrib(callback: types.CallbackQuery):
+async def get_result_distrib_today(callback: types.CallbackQuery):
     today = datetime.datetime.now().strftime('%d.%m.%Y')
     events = data.select_events_by_date(today)
     s = make_result_distrib(events)
@@ -213,7 +213,7 @@ async def get_result_distrib(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "tommorow_result")
-async def get_result_distrib(callback: types.CallbackQuery):
+async def get_result_distrib_tommorow(callback: types.CallbackQuery):
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
     events = data.select_events_by_date(today)
@@ -230,7 +230,7 @@ async def get_result_distrib(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "choose_date_result")
-async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
+async def get_result_distrib_date(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(
         "Введите дату в формате: День.Месяц.Год",
     )
@@ -238,7 +238,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.message(ChooseDataResult.date)
-async def food_id_ext(message: Message, state: FSMContext):
+async def get_result_distrib_date_request(message: Message, state: FSMContext):
     await state.update_data(date=message.text)
     date = await state.get_data()
 
@@ -254,7 +254,7 @@ async def food_id_ext(message: Message, state: FSMContext):
 
 
 @router.message(DeleteUser.choosing_id_ext)
-async def food_id_ext(message: Message, state: FSMContext):
+async def delete_user_request_id(message: Message, state: FSMContext):
     await state.update_data(choosing_id_ext=message.text)
 
     user_data = await state.get_data()
@@ -267,7 +267,7 @@ async def food_id_ext(message: Message, state: FSMContext):
 
 
 @router.message(ChooseUser.choosing_id_ext)
-async def food_id_ext(message: Message, state: FSMContext):
+async def delete_user_request_name(message: Message, state: FSMContext):
     await state.update_data(choosing_id_ext=message.text)
     await message.answer(
         text="Спасибо. Теперь, пожалуйста, выберите имя пользователя: ",
@@ -276,7 +276,7 @@ async def food_id_ext(message: Message, state: FSMContext):
 
 
 @router.message(ChooseUser.choosing_name)
-async def food_id_ext(message: Message, state: FSMContext):
+async def delete_user_request_reply(message: Message, state: FSMContext):
     await state.update_data(choosing_name=message.text)
 
     user_data = await state.get_data()
@@ -288,8 +288,9 @@ async def food_id_ext(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == "Подтвердить")
-async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
+async def delete_user_request_finish(callback: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
+    print(user_data)
     try:
         flag = data.insert_player(user_data['choosing_id_ext'], user_data['choosing_name'])
         await state.clear()
@@ -306,6 +307,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
             )
 
     except Exception:
+        print(traceback.format_exc())
         data.delete_player(user_data['choosing_id_ext'])
         await state.clear()
         await callback.message.answer(
@@ -315,7 +317,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == "Заполнить заново")
-async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
+async def pick_again(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
     await callback.message.answer(
@@ -326,7 +328,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == "Удалить работника")
-async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
+async def delete_worker_id(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(
         text="Введите TelegramID пользователя: ",
     )
@@ -334,7 +336,7 @@ async def choose_id_ext(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.message(DeleteUser.choosing_id_ext)
-async def food_id_ext(message: Message, state: FSMContext):
+async def delete_worker_reply(message: Message, state: FSMContext):
     await state.update_data(choosing_id_ext=message.text)
 
     user_data = await state.get_data()

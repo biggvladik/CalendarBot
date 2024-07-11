@@ -37,8 +37,8 @@ class Data:
         cursor = self.conn.cursor()
 
         sql = """
-              Insert into Users (ID_EXT,name)
-                       VALUES (?,?)  
+              Insert into Users (id,ID_EXT,name)
+                       VALUES (?,?,?)  
               """
         sql_check_id = """
                         SELECT id  FROM Users WHERE ID_EXT = ?
@@ -54,8 +54,8 @@ class Data:
 
         if flag1 or flag2:
             return 'Имя/ID уже присутствует в БД!'
-
-        cursor.execute(sql, (id_ext, name))
+        max_id = self.select_max_user_id()
+        cursor.execute(sql, (max_id,id_ext, name))
         cursor.commit()
         cursor.close()
         return False
@@ -136,4 +136,25 @@ class Data:
             return False
 
 
+    def select_max_user_id(self):
+        cursor = self.conn.cursor()
+
+        sql = """
+                                      SELECT MAX(id) FROM Users
+                                     """
+
+        temp_res = cursor.execute(sql)
+        res = temp_res.fetchone()
+        if res:
+            return res[0] + 1
+        else:
+            return 1
+
+
+
+
+
+
+
 data = Data('./Calendar.mdb')
+
