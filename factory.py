@@ -117,3 +117,5 @@ def make_full_str(string: str):
         new_string = string[:index] + string[index + len(substring):]
         return new_string
     return string
+
+

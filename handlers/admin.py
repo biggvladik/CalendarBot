@@ -184,7 +184,8 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == "reply_user")
 async def reply_user_request(callback: types.CallbackQuery):
-    date = callback.message.text.split('|')[0][6::].strip()
+    date = callback.message.text.split('\n')[0].split()[1].strip()
+    print(date,callback.from_user.id)
     data.change_status_message(date, callback.from_user.id)
     await bot.send_message(callback.from_user.id, 'Подтверждение произошло успешно!')
 
