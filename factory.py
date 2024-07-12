@@ -1,7 +1,7 @@
 import gspread
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-
+from datetime import datetime
 import config
 
 
@@ -14,28 +14,33 @@ def check_name(name: str, workers: list):
 
 def get_event_by_name(date: str):
     month_number = date.split('.')[1]
-
+    date_datetime = datetime.strptime(date, '%d.%m.%Y')
     gc = gspread.service_account(filename='credits.json')
     worksheet = gc.open(get_month(config.directory_id, month_number))
     worksheet_list = worksheet.worksheets()
     current_res = []
+    date_number_old = None
     for sheet in worksheet_list:
         worksheets = sheet.get_all_values()
         for item in worksheets[1::]:
             if item[0] == '' and item[7] == '':
                 continue
-            if item[0] == '' and item[7] and current_res:
+            if item[0] == '' and item[7] and current_res and current_res[-1][0] == date_number_old:
                 current_res[-1][2] += [i.strip() for i in item[7].split('\n')]
                 continue
 
             if item[0] == '' and item[7] and not current_res:
                 continue
+
             sport_name = item[1]
             date_number = item[0].split('\n')[0]
+
+            if date_datetime < datetime.strptime(date_number, '%d.%m.%Y'):
+                return current_res
+
+            date_number_old = date_number
             day_name = item[0].split('\n')[1]
             workers = [i.strip() for i in item[7].split('\n')]
-            ## Ищем еще воркеров
-
             event_name = item[2].replace('\n', ' ')
             time = item[5]
             if date == date_number:
@@ -51,7 +56,7 @@ def make_str(data: list):
         date = date.replace('\n', ' ')
         name_event = s[3]
         res = (f'<b>Дата</b>: {date}\n'
-            #   f'<b>Вид спорта</b>: {s[-1]}\n'
+               #   f'<b>Вид спорта</b>: {s[-1]}\n'
                f'<b>Событие</b>: {name_event}\n'
                f'<b>Работники</b>: {workers}\n')
         res_s = res_s + res
@@ -96,8 +101,9 @@ def make_distrib(players: list, events: list):
             for player_name in [i.strip().lower() for i in event[2]]:
                 if player['name'].lower().strip() in player_name:
                     player['event'].append(event)
-
     return players
+
+
 
 
 def make_result_distrib(events: list):
@@ -126,5 +132,5 @@ def make_full_str(string: str):
         return new_string
     return string
 
+# print(get_event_by_name('12.07.2024'))
 
-print(get_event_by_name('12.07.2024'))

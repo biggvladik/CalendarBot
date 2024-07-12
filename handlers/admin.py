@@ -81,7 +81,10 @@ async def pick_distrib_today(callback: types.CallbackQuery):
     events = get_event_by_name(today)
     res = make_distrib(all_players, events)
     res_s = ''
+    res_false = ''
+    send_events = []
     for event in res:
+        print(event['event'])
         try:
             if not event['event']:
                 continue
@@ -89,19 +92,25 @@ async def pick_distrib_today(callback: types.CallbackQuery):
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(today, event)
             res_s += make_str(event['event'])
+            send_events.append(event['event'])
 
         except Exception:
+            res_false += make_str(event['event'])
             print(traceback.format_exc(), event)
-    if res_s:
-        await callback.message.answer(
-            make_full_str(res_s),
-            parse_mode='HTML'
-        )
-    else:
-        await callback.message.answer(
-            'Ничего отправлено не было!',
-            parse_mode='HTML'
-        )
+
+    await callback.message.answer(
+        make_full_str('Отправленные события:\n' + res_s),
+        parse_mode='HTML'
+    )
+    for event in events:
+        if not event in send_events:
+            print(event)
+            res_false += make_str([event])
+
+    await callback.message.answer(
+        make_full_str('Неотправленные события:\n' + res_false),
+        parse_mode='HTML'
+    )
 
     await callback.answer()
 
@@ -163,7 +172,7 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext):
         try:
             if make_str(event['event']) == 'Расписание не найдено!':
                 continue
-            await bot.send_message(int(event['id']),  make_full_str(make_str(event['event'])), parse_mode='HTML',
+            await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             data.insert_message_logs(date['date'], event)
             res_s += make_str(event['event'])
@@ -185,7 +194,7 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext):
 @router.callback_query(F.data == "reply_user")
 async def reply_user_request(callback: types.CallbackQuery):
     date = callback.message.text.split('\n')[0].split()[1].strip()
-    print(date,callback.from_user.id)
+    print(date, callback.from_user.id)
     data.change_status_message(date, callback.from_user.id)
     await bot.send_message(callback.from_user.id, 'Подтверждение произошло успешно!')
 
@@ -281,7 +290,6 @@ async def delete_user_request_reply(message: Message, state: FSMContext):
     await state.update_data(choosing_name=message.text)
 
     user_data = await state.get_data()
-    print(user_data)
     await message.answer(
         text=f"Подтвердите выбранную информацию  ID: {user_data['choosing_id_ext']} NAME: {user_data['choosing_name']}",
         reply_markup=get_admin_insert_kb()
