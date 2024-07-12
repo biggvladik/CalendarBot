@@ -22,16 +22,24 @@ def get_event_by_name(date: str):
     for sheet in worksheet_list:
         worksheets = sheet.get_all_values()
         for item in worksheets[1::]:
-            if item[0] is None or item[0] == '':
+            if item[0] == '' and item[7] == '':
+                continue
+            if item[0] == '' and item[7] and current_res:
+                current_res[-1][2] += [i.strip() for i in item[7].split('\n')]
+                continue
+
+            if item[0] == '' and item[7] and not current_res:
                 continue
             sport_name = item[1]
             date_number = item[0].split('\n')[0]
             day_name = item[0].split('\n')[1]
             workers = [i.strip() for i in item[7].split('\n')]
+            ## Ищем еще воркеров
+
             event_name = item[2].replace('\n', ' ')
             time = item[5]
             if date == date_number:
-                current_res.append((date_number, day_name, workers, event_name, time, sport_name))
+                current_res.append([date_number, day_name, workers, event_name, time, sport_name])
     return current_res
 
 
@@ -119,3 +127,4 @@ def make_full_str(string: str):
     return string
 
 
+print(get_event_by_name('12.07.2024'))
