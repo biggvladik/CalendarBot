@@ -31,7 +31,7 @@ async def insert_user(session: AsyncSession, id_ext: int, name: str):
     user = User(
         id_ext=id_ext,
         name=name,
-        is_admin=False,
+        is_admin=0,
     )
 
     session.add(user)
@@ -61,7 +61,7 @@ async def insert_message_logs(session: AsyncSession, date_str: str, message: dic
             id_ext=message['id'],
             date_str=date_str,
             message_str=make_str(message['event']),
-            approve=False,
+            approve= 0,
         )
         session.add(message)
         await session.commit()
@@ -69,14 +69,14 @@ async def insert_message_logs(session: AsyncSession, date_str: str, message: dic
 
 async def change_status_message(session: AsyncSession, date_str: str, id_ext: str):
     query = update(Message).where(Message.id_ext == id_ext, Message.date_str == date_str).values(
-        approve=True
+        approve = 1
     )
     await session.execute(query)
     await session.commit()
 
 
 async def check_admin_user(session: AsyncSession, id_ext: int):
-    query = select(User).where(User.id_ext == id_ext,User.is_admin == 'True')
+    query = select(User).where(User.id_ext == id_ext,User.is_admin == 1)
     result = await session.execute(query)
     if result.fetchone():
         return True
