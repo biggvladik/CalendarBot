@@ -5,10 +5,11 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from handlers import admin, start
 from config import bot
 from middlewares import DataBaseSession
-from db.engine import session_maker
+from db.engine import session_maker,create_db
 
 
 async def main():
+  #  await create_db()
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_routers(admin.router, start.router)
     dp.update.middleware(DataBaseSession(session_pool=session_maker))

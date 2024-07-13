@@ -10,13 +10,14 @@ from factory import make_str
 async def select_user_name(session: AsyncSession, id_ext: str):
     query = select(User).where(User.id_ext == id_ext)
     result = await session.execute(query)
-    return result.fetchone()
+    res = result.fetchone()
+    return (lambda x: True if x else False)(res)
 
 
 async def select_all_users(session: AsyncSession):
     query = select(User.id_ext, User.name)
     result = await session.execute(query)
-    return result.scalars().all()
+    return result.fetchall()
 
 
 async def insert_user(session: AsyncSession, id_ext: int, name: str):
@@ -79,8 +80,8 @@ async def check_admin_user(session: AsyncSession, id_ext: int):
     query = select(Message).where(Message.id_ext == id_ext)
     result = await session.execute(query)
     if result:
-        return result.fetchone()
-    return result.fetchone()[0]
+        return True
+    return False
 
 
 async def select_events_by_date(session: AsyncSession, date_str: str):
@@ -91,40 +92,4 @@ async def select_events_by_date(session: AsyncSession, date_str: str):
     result = await session.execute(query)
     return result.fetchall()
 
-# async def orm_add_product(session: AsyncSession, data: dict):
-#     obj = Product(
-#         name=data["name"],
-#         description=data["description"],
-#         price=float(data["price"]),
-#         image=data["image"],
-#     )
-#     session.add(obj)
-#     await session.commit()
-#
-#
-# async def orm_get_products(session: AsyncSession):
-#     query = select(Product)
-#     result = await session.execute(query)
-#     return result.scalars().all()
-#
-#
-# async def orm_get_product(session: AsyncSession, product_id: int):
-#     query = select(Product).where(Product.id == product_id)
-#     result = await session.execute(query)
-#     return result.scalar()
-#
-#
-# async def orm_update_product(session: AsyncSession, product_id: int, data):
-#     query = update(Product).where(Product.id == product_id).values(
-#         name=data["name"],
-#         description=data["description"],
-#         price=float(data["price"]),
-#         image=data["image"],)
-#     await session.execute(query)
-#     await session.commit()
-#
-#
-# async def orm_delete_product(session: AsyncSession, product_id: int):
-#     query = delete(Product).where(Product.id == product_id)
-#     await session.execute(query)
-#     await session.commit()
+

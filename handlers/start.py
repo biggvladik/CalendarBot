@@ -9,14 +9,16 @@ import datetime
 from factory import get_event_by_name, make_str, make_distrib, make_result_distrib, make_full_str, get_month_full
 from config import bot
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from db.orm_query import *
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router()
 
 
 @router.message(Command("start"))
-async def start_handler(message: types.Message):
+async def start_handler(message: types.Message, session: AsyncSession):
     # Проверка авторизованности
-    flag = data.select_player_name(str(message.from_user.id))
+    flag = await select_user_name(session, str(message.from_user.id))
     if not flag:
         await message.answer(
             "Вы не авторизованы!")
@@ -35,13 +37,13 @@ async def show_id_handler(message: types.Message):
 
 
 @router.message(Command("send_push"))
-async def send_push_handler(message: types.Message):
+async def send_push_handler(message: types.Message, session: AsyncSession):
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
-    all_players = data.select_all_players_new()
+    all_players = await select_all_users_new(session)
     events = get_event_by_name(today)
     res = make_distrib(all_players, events)
-    flag = data.check_admin_user(message.from_user.id)
+    flag = await check_admin_user(session, message.from_user.id)
     if not flag:
         await message.answer(
             'У вас нет админ прав!',
@@ -58,7 +60,7 @@ async def send_push_handler(message: types.Message):
                 continue
             await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
-            data.insert_message_logs(today, event)
+            await insert_message_logs(session, today, event)
             res_s += make_str(event['event'])
         except Exception:
             pass
@@ -75,8 +77,8 @@ async def send_push_handler(message: types.Message):
 
 
 @router.message(Command("show_result"))
-async def show_result_handler(message: types.Message):
-    flag = data.check_admin_user(message.from_user.id)
+async def show_result_handler(message: types.Message, session: AsyncSession):
+    flag = await  check_admin_user(session,message.from_user.id)
     if not flag:
         await message.answer(
             'У вас нет админ прав!',
@@ -86,7 +88,7 @@ async def show_result_handler(message: types.Message):
 
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
-    events = data.select_events_by_date(today)
+    events = await  select_events_by_date(session,today)
     s = make_result_distrib(events)
 
     await message.answer(
