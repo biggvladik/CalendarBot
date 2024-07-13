@@ -11,6 +11,8 @@ import datetime
 from factory import get_event_by_name, make_str, make_distrib, make_result_distrib, make_full_str
 from config import bot
 from sqlalchemy.ext.asyncio import AsyncSession
+from db.orm_query import *
+
 router = Router()
 
 
@@ -49,7 +51,7 @@ async def send_cancel_admin_distrib(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Показать всех работников")
-async def send_admin_requests(callback: types.CallbackQuery,session:AsyncSession):
+async def send_admin_requests(callback: types.CallbackQuery, session: AsyncSession):
     from db.orm_query import select_all_users
     res = await select_all_users(session)
     s = ''
@@ -57,6 +59,7 @@ async def send_admin_requests(callback: types.CallbackQuery,session:AsyncSession
         s = s + item[0] + ' | ' + item[1] + '\n'
     s = (lambda x: x if x else "Работники не добавлены!")(s)
     await callback.message.answer(s)
+    await callback.answer()
 
 
 @router.callback_query(F.data == "Добавить работника")
@@ -77,22 +80,21 @@ async def pick_distrib(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Сегодня")
-async def pick_distrib_today(callback: types.CallbackQuery):
+async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSession):
     today = datetime.datetime.now().strftime('%d.%m.%Y')
-    all_players = data.select_all_players_new()
+    all_players = await select_all_users_new(session)
     events = get_event_by_name(today)
     res = make_distrib(all_players, events)
     res_s = ''
     res_false = ''
     send_events = []
     for event in res:
-        print(event['event'])
         try:
             if not event['event']:
                 continue
             await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
-            data.insert_message_logs(today, event)
+            await insert_message_logs(session, today, event)
             res_s += make_str(event['event'])
             send_events.append(event['event'])
 
@@ -118,10 +120,10 @@ async def pick_distrib_today(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Завтра")
-async def pick_distrib_tommorow(callback: types.CallbackQuery):
+async def pick_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSession):
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
-    all_players = data.select_all_players_new()
+    all_players = await select_all_users_new(session)
     events = get_event_by_name(today)
     res = make_distrib(all_players, events)
     res_s = ''
@@ -133,7 +135,7 @@ async def pick_distrib_tommorow(callback: types.CallbackQuery):
                 continue
             await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
-            data.insert_message_logs(today, event)
+            await insert_message_logs(session, today, event)
             res_s += make_str(event['event'])
         except Exception:
             pass
@@ -159,11 +161,11 @@ async def pick_distrib_date(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.message(ChooseData.date)
-async def pick_distrib_date_requests(message: Message, state: FSMContext):
+async def pick_distrib_date_requests(message: Message, state: FSMContext, session: AsyncSession):
     await state.update_data(date=message.text)
     date = await state.get_data()
 
-    all_players = data.select_all_players_new()
+    all_players = await select_all_users_new(session)
     events = get_event_by_name(date['date'])
     res = make_distrib(all_players, events)
     res_s = ''
@@ -176,7 +178,7 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext):
                 continue
             await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
-            data.insert_message_logs(date['date'], event)
+            await insert_message_logs(session, date['date'], event)
             res_s += make_str(event['event'])
 
         except Exception:
@@ -194,10 +196,10 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == "reply_user")
-async def reply_user_request(callback: types.CallbackQuery):
+async def reply_user_request(callback: types.CallbackQuery, session: AsyncSession):
     date = callback.message.text.split('\n')[0].split()[1].strip()
     print(date, callback.from_user.id)
-    data.change_status_message(date, callback.from_user.id)
+    await  change_status_message(session, date, str(callback.from_user.id))
     await bot.send_message(callback.from_user.id, 'Подтверждение произошло успешно!')
 
 
@@ -211,9 +213,9 @@ async def get_result_distrib(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "today_result")
-async def get_result_distrib_today(callback: types.CallbackQuery):
+async def get_result_distrib_today(callback: types.CallbackQuery, session: AsyncSession):
     today = datetime.datetime.now().strftime('%d.%m.%Y')
-    events = data.select_events_by_date(today)
+    events = await select_events_by_date(session,today)
     s = make_result_distrib(events)
 
     await callback.message.answer(
@@ -225,10 +227,10 @@ async def get_result_distrib_today(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "tommorow_result")
-async def get_result_distrib_tommorow(callback: types.CallbackQuery):
+async def get_result_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSession):
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
-    events = data.select_events_by_date(today)
+    events = await select_events_by_date(session,today)
     s = make_result_distrib(events)
 
     if s.strip() == '':
@@ -250,11 +252,11 @@ async def get_result_distrib_date(callback: types.CallbackQuery, state: FSMConte
 
 
 @router.message(ChooseDataResult.date)
-async def get_result_distrib_date_request(message: Message, state: FSMContext):
+async def get_result_distrib_date_request(message: Message, state: FSMContext, session: AsyncSession):
     await state.update_data(date=message.text)
     date = await state.get_data()
 
-    events = data.select_events_by_date(date['date'])
+    events = await select_events_by_date(session,date['date'])
     s = make_result_distrib(events)
     if s.strip() == '':
         s = 'События не найдены!'
@@ -299,11 +301,11 @@ async def delete_user_request_reply(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == "Подтвердить")
-async def delete_user_request_finish(callback: types.CallbackQuery, state: FSMContext):
+async def delete_user_request_finish(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     user_data = await state.get_data()
     print(user_data)
     try:
-        flag = data.insert_player(user_data['choosing_id_ext'], user_data['choosing_name'])
+        flag = await insert_user(session,user_data['choosing_id_ext'], user_data['choosing_name'])
         await state.clear()
         if not flag:
             await callback.message.answer(
@@ -319,7 +321,7 @@ async def delete_user_request_finish(callback: types.CallbackQuery, state: FSMCo
 
     except Exception:
         print(traceback.format_exc())
-        data.delete_player(user_data['choosing_id_ext'])
+        await delete_user(session,user_data['choosing_id_ext'])
         await state.clear()
         await callback.message.answer(
             text="Удаление произошло успешно",

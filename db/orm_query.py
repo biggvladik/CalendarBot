@@ -21,13 +21,12 @@ async def select_all_users(session: AsyncSession):
 
 
 async def insert_user(session: AsyncSession, id_ext: int, name: str):
-    user_flag_id_query = select(User.id_ext)
+    user_flag_id_query = select(User.id).where(User.id_ext == id_ext)
     user_flag_id = await session.execute(user_flag_id_query)
-
-    user_flag_name_query = select(User.name)
+    user_flag_name_query = select(User.id).where(User.name == name)
     user_flag_name = await session.execute(user_flag_name_query)
 
-    if user_flag_id or user_flag_name:
+    if user_flag_id.fetchone() or user_flag_name.fetchone():
         return 'Имя/ID уже присутствует в БД!'
     user = User(
         id_ext=id_ext,
