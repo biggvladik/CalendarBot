@@ -1,7 +1,7 @@
 import pyodbc
 from factory import make_str
-
-
+import asyncio
+import aiosqlite
 class Data:
     def __init__(self, road):
         self.static_road = 'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=' + road
@@ -157,4 +157,7 @@ class Data:
 
 
 data = Data('./Calendar.mdb')
+
+
+
 
