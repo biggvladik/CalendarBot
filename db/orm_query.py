@@ -53,9 +53,9 @@ async def select_all_users_new(session: AsyncSession):
 
 
 async def insert_message_logs(session: AsyncSession, date_str: str, message: dict):
-    message_flag_query = select(Message.id_ext, Message.date_str)
+    message_flag_query = select(Message.id).where(Message.date_str == date_str,Message.message_str == make_str(message['event']))
     message_flag_id = await session.execute(message_flag_query)
-
+    message_flag_id = (lambda x: True if x else False)(message_flag_id.fetchone())
     if not message_flag_id:
         message = Message(
             id_ext=message['id'],
@@ -92,3 +92,8 @@ async def select_events_by_date(session: AsyncSession, date_str: str):
     return result.fetchall()
 
 
+async def select_user_name_by_id(session: AsyncSession, id_ext: str):
+    query = select(User.name).where(User.id_ext == id_ext)
+    result = await session.execute(query)
+    res = result.fetchone()
+    return (lambda x: x[0] if x else 'Пусто')(res)

@@ -92,10 +92,13 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
         try:
             if not event['event']:
                 continue
-            await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
+            user_name = await select_user_name_by_id(session, str(event['id']))
+            await bot.send_message(int(event['id']),
+                                   make_full_str(make_str(event['event'])),
+                                   parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             await insert_message_logs(session, today, event)
-            res_s += make_str(event['event'])
+            res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
             send_events.append(event['event'])
 
         except Exception:
@@ -127,28 +130,37 @@ async def pick_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSes
     events = get_event_by_name(today)
     res = make_distrib(all_players, events)
     res_s = ''
+    res_false = ''
+    send_events = []
     for event in res:
         if not event['event']:
             continue
         try:
             if make_str(event['event']) == 'Расписание не найдено!':
                 continue
+            user_name = await select_user_name_by_id(session, str(event['id']))
+
             await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             await insert_message_logs(session, today, event)
-            res_s += make_str(event['event'])
+            res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
+            send_events.append(event['event'])
         except Exception:
             pass
-    if res_s:
-        await callback.message.answer(
-            make_full_str(res_s),
-            parse_mode='HTML'
-        )
-    else:
-        await callback.message.answer(
-            'Ничего отправлено не было!',
-            parse_mode='HTML'
-        )
+
+    await callback.message.answer(
+        make_full_str('Отправленные события:\n' + res_s),
+        parse_mode='HTML'
+    )
+    for event in events:
+        if not event in send_events:
+            res_false += make_str([event])
+
+    await callback.message.answer(
+        make_full_str('Неотправленные события:\n' + res_false),
+        parse_mode='HTML'
+    )
+
     await callback.answer()
 
 
@@ -169,31 +181,35 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext, sessio
     events = get_event_by_name(date['date'])
     res = make_distrib(all_players, events)
     res_s = ''
-
+    res_false = ''
+    send_events = []
     for event in res:
         if not event['event']:
             continue
         try:
             if make_str(event['event']) == 'Расписание не найдено!':
                 continue
+            user_name = await select_user_name_by_id(session, str(event['id']))
             await bot.send_message(int(event['id']), make_full_str(make_str(event['event'])), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             await insert_message_logs(session, date['date'], event)
-            res_s += make_str(event['event'])
-
+            res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
+            send_events.append(event['event'])
         except Exception:
             pass
-    if res_s:
-        await message.answer(
-            make_full_str(res_s),
-            parse_mode='HTML'
-        )
-    else:
-        await message.answer(
-            'Ничего отправлено не было!',
-            parse_mode='HTML'
-        )
 
+    await message.answer(
+        make_full_str('Отправленные события:\n' + res_s),
+        parse_mode='HTML'
+    )
+    for event in events:
+        if not event in send_events:
+            res_false += make_str([event])
+
+    await message.answer(
+        make_full_str('Неотправленные события:\n' + res_false),
+        parse_mode='HTML'
+    )
 
 @router.callback_query(F.data == "reply_user")
 async def reply_user_request(callback: types.CallbackQuery, session: AsyncSession):
@@ -215,7 +231,7 @@ async def get_result_distrib(callback: types.CallbackQuery):
 @router.callback_query(F.data == "today_result")
 async def get_result_distrib_today(callback: types.CallbackQuery, session: AsyncSession):
     today = datetime.datetime.now().strftime('%d.%m.%Y')
-    events = await select_events_by_date(session,today)
+    events = await select_events_by_date(session, today)
     s = make_result_distrib(events)
 
     await callback.message.answer(
@@ -230,7 +246,7 @@ async def get_result_distrib_today(callback: types.CallbackQuery, session: Async
 async def get_result_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSession):
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
-    events = await select_events_by_date(session,today)
+    events = await select_events_by_date(session, today)
     s = make_result_distrib(events)
 
     if s.strip() == '':
@@ -256,7 +272,7 @@ async def get_result_distrib_date_request(message: Message, state: FSMContext, s
     await state.update_data(date=message.text)
     date = await state.get_data()
 
-    events = await select_events_by_date(session,date['date'])
+    events = await select_events_by_date(session, date['date'])
     s = make_result_distrib(events)
     if s.strip() == '':
         s = 'События не найдены!'
@@ -305,7 +321,7 @@ async def delete_user_request_finish(callback: types.CallbackQuery, state: FSMCo
     user_data = await state.get_data()
     print(user_data)
     try:
-        flag = await insert_user(session,user_data['choosing_id_ext'], user_data['choosing_name'])
+        flag = await insert_user(session, user_data['choosing_id_ext'], user_data['choosing_name'])
         await state.clear()
         if not flag:
             await callback.message.answer(
@@ -321,7 +337,7 @@ async def delete_user_request_finish(callback: types.CallbackQuery, state: FSMCo
 
     except Exception:
         print(traceback.format_exc())
-        await delete_user(session,user_data['choosing_id_ext'])
+        await delete_user(session, user_data['choosing_id_ext'])
         await state.clear()
         await callback.message.answer(
             text="Удаление произошло успешно",
