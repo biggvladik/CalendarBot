@@ -1,25 +1,21 @@
-class CounterState:
-    def __init__(self,step):
-        self.step = step
+from typing import Any, Awaitable, Callable, Dict
+
+from aiogram import BaseMiddleware
+from aiogram.types import TelegramObject
+
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 
-    def __next__(self):
-        if self.step <= 0:
-            raise StopIteration
-        self.step -= 1
-        return self.step
+class DataBaseSession(BaseMiddleware):
+    def __init__(self, session_pool: async_sessionmaker):
+        self.session_pool = session_pool
 
-class CountDown:
-    def __init__(self,steps):
-        self.steps = steps
-
-    def __iter__(self):
-        return CounterState(self.steps)
-
-
-data = CounterState(10)
-
-
-for i in data:
-    print(i)
-
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: Dict[str, Any],
+    ) -> Any:
+        async with self.session_pool() as session:
+            data['session'] = session
+            return await handler(event, data)
