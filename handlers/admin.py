@@ -99,7 +99,7 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
                                    reply_markup=get_admin_reply())
             await insert_message_logs(session, today, event)
             res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
-            send_events.append(event['event'])
+            send_events += (event['event'])
 
         except Exception:
             res_false += make_str(event['event'])
@@ -144,7 +144,7 @@ async def pick_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSes
                                    reply_markup=get_admin_reply())
             await insert_message_logs(session, today, event)
             res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
-            send_events.append(event['event'])
+            send_events += (event['event'])
         except Exception:
             pass
 
@@ -194,7 +194,7 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext, sessio
                                    reply_markup=get_admin_reply())
             await insert_message_logs(session, date['date'], event)
             res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
-            send_events.append(event['event'])
+            send_events += (event['event'])
         except Exception:
             pass
 

@@ -52,33 +52,39 @@ async def send_push_handler(message: types.Message, session: AsyncSession):
         return
 
     res_s = ''
+    res_false = ''
+    send_events = []
     for event in res:
         if not event['event']:
             continue
         try:
             if make_str(event['event']) == 'Расписание не найдено!':
                 continue
+            user_name = await select_user_name_by_id(session, str(event['id']))
             await bot.send_message(int(event['id']), make_str(event['event']), parse_mode='HTML',
                                    reply_markup=get_admin_reply())
             await insert_message_logs(session, today, event)
-            res_s += make_str(event['event'])
+            res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
+            send_events += (event['event'])
         except Exception:
             pass
-    if res_s:
-        await message.answer(
-            make_full_str(res_s),
-            parse_mode='HTML'
-        )
-    else:
-        await message.answer(
-            'Ничего отправлено не было!',
-            parse_mode='HTML'
-        )
+    await message.answer(
+        make_full_str('Отправленные события:\n' + res_s),
+        parse_mode='HTML'
+    )
+    for event in events:
+        if not event in send_events:
+            res_false += make_str([event])
+
+    await message.answer(
+        make_full_str('Неотправленные события:\n' + res_false),
+        parse_mode='HTML'
+    )
 
 
 @router.message(Command("show_result"))
 async def show_result_handler(message: types.Message, session: AsyncSession):
-    flag = await  check_admin_user(session,message.from_user.id)
+    flag = await  check_admin_user(session, message.from_user.id)
     if not flag:
         await message.answer(
             'У вас нет админ прав!',
@@ -88,7 +94,7 @@ async def show_result_handler(message: types.Message, session: AsyncSession):
 
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
-    events = await  select_events_by_date(session,today)
+    events = await  select_events_by_date(session, today)
     s = make_result_distrib(events)
 
     await message.answer(
