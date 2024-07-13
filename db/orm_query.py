@@ -76,9 +76,9 @@ async def change_status_message(session: AsyncSession, date_str: str, id_ext: st
 
 
 async def check_admin_user(session: AsyncSession, id_ext: int):
-    query = select(Message).where(Message.id_ext == id_ext)
+    query = select(User).where(User.id_ext == id_ext,User.is_admin == 'True')
     result = await session.execute(query)
-    if result:
+    if result.fetchone():
         return True
     return False
 
