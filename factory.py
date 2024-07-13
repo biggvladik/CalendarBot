@@ -45,6 +45,7 @@ def get_event_by_name(date: str):
             time = item[5]
             if date == date_number:
                 current_res.append([date_number, day_name, workers, event_name, time, sport_name])
+
     return current_res
 
 
@@ -56,7 +57,6 @@ def make_str(data: list):
         date = date.replace('\n', ' ')
         name_event = s[3]
         res = (f'<b>Дата</b>: {date}\n'
-               #   f'<b>Вид спорта</b>: {s[-1]}\n'
                f'<b>Событие</b>: {name_event}\n'
                f'<b>Работники</b>: {workers}\n')
         res_s = res_s + res
