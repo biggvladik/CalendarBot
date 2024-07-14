@@ -3,14 +3,11 @@ import traceback
 from aiogram import types, F, Router
 from keyboards.for_admin import get_admin_kb, get_admin_insert_kb, get_admin_distrb, get_admin_reply, \
     get_admin_distrb_result
-from database import data
 from keyboards.for_admin import ChooseUser, DeleteUser, ChooseData, ChooseDataResult
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
 import datetime
-from factory import get_event_by_name, make_str, make_distrib, make_result_distrib, make_full_str
+from factory import get_event_by_name, make_distrib, make_result_distrib, make_full_str
 from config import bot
-from sqlalchemy.ext.asyncio import AsyncSession
 from db.orm_query import *
 
 router = Router()
