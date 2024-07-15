@@ -77,7 +77,9 @@ def get_month(directory_id: str, month_number: str):
                                    fields="nextPageToken, files(id, name, createdTime)",
                                    q=f"'{directory_id}' in parents").execute()
     results['files'] = sorted(results['files'], key=lambda x: x['createdTime'])
-    return [i['name'] for i in results['files'][-2:] if month_number in i['name']][0]
+    #print(results['files'][-2:])
+    print([i['name'] for i in results['files'][-3:] if month_number in i['name']])
+    return [i['name'] for i in results['files'][-3:] if month_number in i['name']][0]
 
 
 def get_month_full(directory_id: str):
@@ -109,7 +111,7 @@ def make_distrib(players: list, events: list):
 def make_result_distrib(events: list):
     s = ''
     for number, event in enumerate(events):
-        status = (lambda x: '+' if x == 1 else '-')(event[2])
+        status = (lambda x: '✅' if x == 1 else '❌')(event[2])
         s = s + (f'<b>ДАТА</b>: {event[0]}\n'
                  f'<b>РАБОТНИК</b>: {event[3]}\n'
                  f'<b>СТАТУС</b>: {status}\n')

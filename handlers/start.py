@@ -68,7 +68,7 @@ async def send_push_handler(message: types.Message, session: AsyncSession):
         except Exception as error:
             print(error)
     await message.answer(
-        make_full_str('Отправленные события:\n' + res_s),
+        make_full_str('✅ Отправленные события:\n' + res_s),
         parse_mode='HTML'
     )
     for event in events:
@@ -76,7 +76,7 @@ async def send_push_handler(message: types.Message, session: AsyncSession):
             res_false += make_str([event])
 
     await message.answer(
-        make_full_str('Неотправленные события:\n' + res_false),
+        make_full_str('❌ Неотправленные события:\n' + res_false),
         parse_mode='HTML'
     )
 

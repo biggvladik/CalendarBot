@@ -103,7 +103,7 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
             print(traceback.format_exc(), event)
 
     await callback.message.answer(
-        make_full_str('Отправленные события:\n' + res_s),
+        make_full_str('<b> ✅ Отправленные события:</b>\n\n' + res_s),
         parse_mode='HTML'
     )
     for event in events:
@@ -112,7 +112,7 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
             res_false += make_str([event])
 
     await callback.message.answer(
-        make_full_str('Неотправленные события:\n' + res_false),
+        make_full_str('<b>❌ Неотправленные события:</b>\n\n' + res_false),
         parse_mode='HTML'
     )
 
@@ -146,7 +146,7 @@ async def pick_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSes
             pass
 
     await callback.message.answer(
-        make_full_str('Отправленные события:\n' + res_s),
+        make_full_str('✅ Отправленные события:\n' + res_s),
         parse_mode='HTML'
     )
     for event in events:
@@ -154,7 +154,7 @@ async def pick_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSes
             res_false += make_str([event])
 
     await callback.message.answer(
-        make_full_str('Неотправленные события:\n' + res_false),
+        make_full_str('❌ Неотправленные события:\n' + res_false),
         parse_mode='HTML'
     )
 
@@ -196,7 +196,7 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext, sessio
             pass
 
     await message.answer(
-        make_full_str('Отправленные события:\n' + res_s),
+        make_full_str('✅ Отправленные события:\n' + res_s),
         parse_mode='HTML'
     )
     for event in events:
@@ -204,14 +204,13 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext, sessio
             res_false += make_str([event])
 
     await message.answer(
-        make_full_str('Неотправленные события:\n' + res_false),
+        make_full_str('❌ Неотправленные события:\n' + res_false),
         parse_mode='HTML'
     )
 
 @router.callback_query(F.data == "reply_user")
 async def reply_user_request(callback: types.CallbackQuery, session: AsyncSession):
     date = callback.message.text.split('\n')[0].split()[1].strip()
-    print(date, callback.from_user.id)
     await  change_status_message(session, date, str(callback.from_user.id))
     await bot.send_message(callback.from_user.id, 'Подтверждение произошло успешно!')
 
