@@ -12,7 +12,7 @@ def check_name(name: str, workers: list):
     return False
 
 
-def get_event_by_name(date: str):
+def get_event_by_name_old(date: str):
     month_number = date.split('.')[1]
     date_datetime = datetime.strptime(date, '%d.%m.%Y')
     gc = gspread.service_account(filename='credits.json')
@@ -77,9 +77,7 @@ def get_month(directory_id: str, month_number: str):
                                    fields="nextPageToken, files(id, name, createdTime)",
                                    q=f"'{directory_id}' in parents").execute()
     results['files'] = sorted(results['files'], key=lambda x: x['createdTime'])
-    #print(results['files'][-2:])
-    print([i['name'] for i in results['files'][-3:] if month_number in i['name']])
-    return [i['name'] for i in results['files'][-3:] if month_number in i['name']][0]
+    return [i['name'] for i in results['files'] if month_number in i['name']][0]
 
 
 def get_month_full(directory_id: str):
@@ -104,8 +102,6 @@ def make_distrib(players: list, events: list):
                 if player['name'].lower().strip() in player_name:
                     player['event'].append(event)
     return players
-
-
 
 
 def make_result_distrib(events: list):
@@ -134,5 +130,53 @@ def make_full_str(string: str):
         return new_string
     return string
 
-# print(get_event_by_name('12.07.2024'))
+
+def get_event_by_name(date: str):
+    month_number = date.split('.')[1]
+    date_datetime = datetime.strptime(date, '%d.%m.%Y')
+    gc = gspread.service_account(filename='credits.json')
+    worksheet = gc.open(get_month(config.directory_id, month_number))
+    worksheet_list = worksheet.worksheets()
+    current_res = []
+    day_number_old = None
+    date_number_old = None
+    worksheet_data = []
+    for sheet in worksheet_list:
+        worksheets = sheet.get_all_values()
+        worksheet_data.append(worksheets)
+
+        for item in worksheets[1::]:
+            if item[0] == '' and item[7] == '':
+                continue
+            if item[0] == '' and item[7] and current_res and current_res[-1][0] == date_number_old and not (item[2]):
+                current_res[-1][2] += [i.strip() for i in item[7].split('\n')]
+                continue
+
+            if item[0] == '' and item[7] and not current_res:
+                continue
+
+            sport_name = item[1]
+            date_number = item[0].split('\n')[0]
+            if date_number == '':
+                date_number = date_number_old
+            if date_datetime < datetime.strptime(date_number, '%d.%m.%Y'):
+                return current_res
+
+            date_number_old = date_number
+            try:
+                day_name = item[0].split('\n')[1]
+                day_number_old = day_name
+
+            except:
+                day_name = day_number_old
+
+            workers = [i.strip() for i in item[7].split('\n')]
+            event_name = item[2].replace('\n', ' ')
+            time = item[5]
+            if date == date_number:
+                current_res.append([date_number, day_name, workers, event_name, time, sport_name])
+
+    return current_res
+
+
 
