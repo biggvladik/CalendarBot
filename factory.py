@@ -55,7 +55,7 @@ def make_str(data: list):
         workers = ', '.join(s[2])
         date = s[0]
         date = date.replace('\n', ' ')
-        name_event = s[3]
+        name_event = (lambda x: x[3] if x[3] else x[-1])(s)
         res = (f'<b>Дата</b>: {date}\n'
                f'<b>Событие</b>: {name_event}\n'
                f'<b>Работники</b>: {workers}\n')
