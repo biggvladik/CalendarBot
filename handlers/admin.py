@@ -217,6 +217,7 @@ async def reply_user_request(callback: types.CallbackQuery, session: AsyncSessio
 
 @router.callback_query(F.data == "result distrib")
 async def get_result_distrib(callback: types.CallbackQuery):
+    print('get_result_distrib')
     await callback.message.answer(
         "Выберите дату событий",
         reply_markup=get_admin_distrb_result()
@@ -226,6 +227,7 @@ async def get_result_distrib(callback: types.CallbackQuery):
 
 @router.callback_query(F.data == "today_result")
 async def get_result_distrib_today(callback: types.CallbackQuery, session: AsyncSession):
+    print('get_result_distrib_today')
     today = datetime.datetime.now().strftime('%d.%m.%Y')
     events = await select_events_by_date(session, today)
     s = make_result_distrib(events)
@@ -240,6 +242,7 @@ async def get_result_distrib_today(callback: types.CallbackQuery, session: Async
 
 @router.callback_query(F.data == "tommorow_result")
 async def get_result_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSession):
+    print('tommorow_result')
     today = datetime.datetime.now() + datetime.timedelta(days=1)
     today = today.strftime('%d.%m.%Y')
     events = await select_events_by_date(session, today)
@@ -265,6 +268,7 @@ async def get_result_distrib_date(callback: types.CallbackQuery, state: FSMConte
 
 @router.message(ChooseDataResult.date)
 async def get_result_distrib_date_request(message: Message, state: FSMContext, session: AsyncSession):
+    print('date_rusult')
     await state.update_data(date=message.text)
     date = await state.get_data()
 

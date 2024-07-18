@@ -132,6 +132,7 @@ def make_full_str(string: str):
 
 
 def get_event_by_name(date: str):
+    print('get_event_by_name',date)
     month_number = date.split('.')[1]
     date_datetime = datetime.strptime(date, '%d.%m.%Y')
     gc = gspread.service_account(filename='credits.json')
