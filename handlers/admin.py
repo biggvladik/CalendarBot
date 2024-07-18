@@ -164,7 +164,7 @@ async def pick_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSes
 @router.callback_query(F.data == "Выбрать дату")
 async def pick_distrib_date(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(
-        "Введите дату в формате: День.Месяц.Год",
+        "Введите дату в формате: ДД.ММ.ГГГГ",
     )
     await state.set_state(ChooseData.date)
 
@@ -261,7 +261,7 @@ async def get_result_distrib_tommorow(callback: types.CallbackQuery, session: As
 @router.callback_query(F.data == "choose_date_result")
 async def get_result_distrib_date(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(
-        "Введите дату в формате: День.Месяц.Год",
+        "Введите дату в формате: ДД.ММ.ГГГГ",
     )
     await state.set_state(ChooseDataResult.date)
 
