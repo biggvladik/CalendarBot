@@ -3,7 +3,7 @@ from aiogram.filters import Command
 
 import config
 from keyboards.for_start import get_start_kb
-from keyboards.for_admin import get_admin_reply, get_admin_distrb_result
+from keyboards.for_admin import get_admin_reply, get_admin_distrb_result,get_admin_distrb
 import datetime
 from factory import get_event_by_name, make_distrib, make_result_distrib, make_full_str, get_month_full
 from config import bot
@@ -120,3 +120,49 @@ async def send_link_handler(message: types.Message):
         'Выберите месяц',
         reply_markup=builder.as_markup(),
     )
+
+
+
+
+
+
+@router.message(Command("show_block_send"))
+async def show_result_handler(message: types.Message, session: AsyncSession):
+    flag = await check_admin_user(session, message.from_user.id)
+    if not flag:
+        await message.answer(
+            'У вас нет админ прав!',
+            parse_mode='HTML'
+        )
+        return
+
+    await message.answer(
+        "Выберите дату рассылки",
+        reply_markup=get_admin_distrb()
+    )
+
+
+
+
+
+@router.message(Command("show_block_result"))
+async def show_result_handler(message: types.Message, session: AsyncSession):
+    flag = await check_admin_user(session, message.from_user.id)
+    if not flag:
+        await message.answer(
+            'У вас нет админ прав!',
+            parse_mode='HTML'
+        )
+        return
+
+    await message.answer(
+        "Выберите дату рассылки",
+        reply_markup=get_admin_distrb_result()
+    )
+
+
+
+
+
+
+
