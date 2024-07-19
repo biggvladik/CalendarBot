@@ -16,7 +16,7 @@ router = Router()
 @router.callback_query(F.data == "Админ-панель")
 async def send_admin_requests(callback: types.CallbackQuery, session: AsyncSession):
     # Авторизация
-    flag = await check_admin_user(session,callback.from_user.id)
+    flag = await check_admin_user(session, callback.from_user.id)
     if not flag:
         await callback.message.answer(
             "У вас нет админ прав | Вы не авторизованы",
@@ -98,7 +98,8 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
             res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
             send_events += (event['event'])
 
-        except Exception:
+        except Exception as error:
+            print(error)
             res_false += make_str(event['event'])
             print(traceback.format_exc(), event)
 
@@ -107,8 +108,7 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
         parse_mode='HTML'
     )
     for event in events:
-        if not event in send_events:
-            print(event)
+        if event not in send_events:
             res_false += make_str([event])
 
     await callback.message.answer(
@@ -142,15 +142,15 @@ async def pick_distrib_tommorow(callback: types.CallbackQuery, session: AsyncSes
             await insert_message_logs(session, today, event)
             res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
             send_events += (event['event'])
-        except Exception:
-            pass
+        except Exception as error:
+            print(error)
 
     await callback.message.answer(
         make_full_str('✅ Отправленные события:\n' + res_s),
         parse_mode='HTML'
     )
     for event in events:
-        if not event in send_events:
+        if event not in send_events:
             res_false += make_str([event])
 
     await callback.message.answer(
@@ -192,15 +192,15 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext, sessio
             await insert_message_logs(session, date['date'], event)
             res_s += f'Отправлено: {user_name}\n' + make_str(event['event'])
             send_events += (event['event'])
-        except Exception:
-            pass
+        except Exception as error:
+            print(error)
 
     await message.answer(
         make_full_str('✅ Отправленные события:\n' + res_s),
         parse_mode='HTML'
     )
     for event in events:
-        if not event in send_events:
+        if event not in send_events:
             res_false += make_str([event])
 
     await message.answer(
@@ -208,10 +208,11 @@ async def pick_distrib_date_requests(message: Message, state: FSMContext, sessio
         parse_mode='HTML'
     )
 
+
 @router.callback_query(F.data == "reply_user")
 async def reply_user_request(callback: types.CallbackQuery, session: AsyncSession):
     date = callback.message.text.split('\n')[0].split()[1].strip()
-    await  change_status_message(session, date, str(callback.from_user.id))
+    await change_status_message(session, date, str(callback.from_user.id))
     await bot.send_message(callback.from_user.id, 'Подтверждение произошло успешно!')
 
 
@@ -335,8 +336,8 @@ async def delete_user_request_finish(callback: types.CallbackQuery, state: FSMCo
                 reply_markup=get_admin_kb()
             )
 
-    except Exception:
-        print(traceback.format_exc())
+    except Exception as error:
+        print(error)
         await delete_user(session, user_data['choosing_id_ext'])
         await state.clear()
         await callback.message.answer(

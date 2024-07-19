@@ -132,7 +132,7 @@ def make_full_str(string: str):
 
 
 def get_event_by_name(date: str):
-    print('get_event_by_name',date)
+    print('get_event_by_name', date)
     month_number = date.split('.')[1]
     date_datetime = datetime.strptime(date, '%d.%m.%Y')
     gc = gspread.service_account(filename='credits.json')
@@ -168,7 +168,8 @@ def get_event_by_name(date: str):
                 day_name = item[0].split('\n')[1]
                 day_number_old = day_name
 
-            except:
+            except Exception as error:
+                print(error)
                 day_name = day_number_old
 
             workers = [i.strip() for i in item[7].split('\n')]
@@ -178,6 +179,3 @@ def get_event_by_name(date: str):
                 current_res.append([date_number, day_name, workers, event_name, time, sport_name])
 
     return current_res
-
-
-

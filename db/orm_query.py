@@ -1,6 +1,5 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
 
 from .models import User, Message
 
@@ -53,7 +52,8 @@ async def select_all_users_new(session: AsyncSession):
 
 
 async def insert_message_logs(session: AsyncSession, date_str: str, message: dict):
-    message_flag_query = select(Message.id).where(Message.date_str == date_str,Message.message_str == make_str(message['event']))
+    message_flag_query = select(Message.id).where(Message.date_str == date_str,
+                                                  Message.message_str == make_str(message['event']))
     message_flag_id = await session.execute(message_flag_query)
     message_flag_id = (lambda x: True if x else False)(message_flag_id.fetchone())
     if not message_flag_id:
@@ -61,7 +61,7 @@ async def insert_message_logs(session: AsyncSession, date_str: str, message: dic
             id_ext=message['id'],
             date_str=date_str,
             message_str=make_str(message['event']),
-            approve= 0,
+            approve=0,
         )
         session.add(message)
         await session.commit()
@@ -69,14 +69,14 @@ async def insert_message_logs(session: AsyncSession, date_str: str, message: dic
 
 async def change_status_message(session: AsyncSession, date_str: str, id_ext: str):
     query = update(Message).where(Message.id_ext == id_ext, Message.date_str == date_str).values(
-        approve = 1
+        approve=1
     )
     await session.execute(query)
     await session.commit()
 
 
 async def check_admin_user(session: AsyncSession, id_ext: int):
-    query = select(User).where(User.id_ext == id_ext,User.is_admin == 1)
+    query = select(User).where(User.id_ext == id_ext, User.is_admin == 1)
     result = await session.execute(query)
     if result.fetchone():
         return True

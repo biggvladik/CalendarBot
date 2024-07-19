@@ -5,7 +5,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from handlers import admin, start
 from config import bot
 from middlewares import DataBaseSession
-from db.engine import session_maker, create_db
+from db.engine import session_maker
 
 
 async def main():
