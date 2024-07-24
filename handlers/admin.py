@@ -101,7 +101,6 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
         except Exception as error:
             print(error)
             res_false += make_str(event['event'])
-            print(traceback.format_exc(), event)
 
     await callback.message.answer(
         make_full_str('<b> ✅ Отправленные события:</b>\n\n' + res_s),
@@ -109,6 +108,7 @@ async def pick_distrib_today(callback: types.CallbackQuery, session: AsyncSessio
     )
     for event in events:
         if event not in send_events:
+            print('EVENTTT',event)
             res_false += make_str([event])
 
     await callback.message.answer(

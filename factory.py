@@ -52,7 +52,7 @@ def get_event_by_name_old(date: str):
 def make_str(data: list):
     res_s = ''
     for number, s in enumerate(data):
-        workers = ', '.join(s[2])
+        workers = ', '.join(set(s[2]))
         date = s[0]
         date = date.replace('\n', ' ')
         name_event = (lambda x: x[3] if x[3] else x[-1])(s)
@@ -173,6 +173,7 @@ def get_event_by_name(date: str):
                 day_name = day_number_old
 
             workers = [i.strip() for i in item[7].split('\n')]
+            print(workers)
             event_name = item[2].replace('\n', ' ')
             time = item[5]
             if date == date_number:
