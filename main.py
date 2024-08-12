@@ -18,5 +18,9 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        filename='bot.log',  # Файл, куда будут записываться логи
+        level=logging.INFO,  # Уровень логирования
+        format='%(asctime)s - %(levelname)s - %(message)s'  # Формат логов
+    )
     asyncio.run(main())
