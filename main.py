@@ -7,6 +7,11 @@ from config import bot
 from middlewares import DataBaseSession
 from db.engine import session_maker
 
+logging.basicConfig(
+    filename='bot_logs.log',  # Файл, куда будут записываться логи
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+) 
 
 async def main():
     #  await create_db()
@@ -18,9 +23,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        filename='bot.log',  # Файл, куда будут записываться логи
-        level=logging.INFO,  # Уровень логирования
-        format='%(asctime)s - %(levelname)s - %(message)s'  # Формат логов
-    )
+
     asyncio.run(main())
